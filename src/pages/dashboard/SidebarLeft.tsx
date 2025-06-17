@@ -16,6 +16,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { SidebarOptInForm } from "@/components/sidebar-opt-in-form"
+import { useTheme } from "next-themes"
 
 // This is sample data.
 const data = {
@@ -150,6 +151,8 @@ const data = {
 }
 
 export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { setTheme } = useTheme()
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -177,6 +180,32 @@ export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) 
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Theme</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild onClick={() => setTheme("light")}>
+                  <a href="#">Light</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild onClick={() => setTheme("dark")}>
+                  <a href="#">Dark</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild onClick={() => setTheme("system")}>
+                  <a href="#">System</a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+
       </SidebarContent>
       <SidebarFooter>
         <div className="p-1">
