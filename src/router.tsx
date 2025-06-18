@@ -1,11 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
-import DashboardPage from './pages/dashboard/page';
+import AichatPage from './pages/aichat/page';
 
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <DashboardPage />,
+    element: <AichatPage />,
   },
   // {
   //   path: '/',
