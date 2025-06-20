@@ -181,3 +181,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* remove outline */
+.ProseMirror:focus {
+  outline: none;
+}
+/* set */
+.ProseMirror {        
+  padding: 20px;
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+}
+

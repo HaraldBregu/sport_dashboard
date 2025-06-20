@@ -1,20 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
-import AichatPage from './pages/aichat/page';
-
+import RenderTest from './pages/render-test';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <AichatPage />,
+    element: <RenderTest />,
   },
-  // {
-  //   path: '/',
-  //   element: <Outlet />,
-  //   children: [
-  //     {
-  //       index: true,
-  //       element: <DashboardPage />,
-  //     },
-  //   ],
-  // },
-]); 
+]);

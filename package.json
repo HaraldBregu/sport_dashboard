@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@react-scan/vite-plugin-react-scan": "^0.1.8",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -80,6 +81,7 @@
     "jest-environment-jsdom": "^30.0.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.5",
+    "react-scan": "^0.3.4",
     "tailwindcss": "^4.1.10",
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
