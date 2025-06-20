@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -187,10 +187,9 @@
   outline: none;
 }
 /* set */
-.ProseMirror {        
+.ProseMirror {
   padding: 20px;
   height: 100%;
   width: 100%;
   overflow: scroll;
 }
-

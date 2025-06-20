@@ -1,9 +1,8 @@
-import Content from "./Content"
-import Header from "./Header"
-import Toolbar from "./Toolbar"
+import Content from './Content'
+import Header from './Header'
+import Toolbar from './Toolbar'
 
 export default function EditorPage() {
-
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -15,5 +14,4 @@ export default function EditorPage() {
   )
 }
 
-EditorPage.displayName = 'EditorPage';
-
+EditorPage.displayName = 'EditorPage'

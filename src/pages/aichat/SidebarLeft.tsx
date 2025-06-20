@@ -1,7 +1,7 @@
-import * as React from "react"
+import * as React from 'react'
 
-import { SearchForm } from "@/components/search-form"
-import { VersionSwitcher } from "@/components/version-switcher"
+import { SearchForm } from '@/components/search-form'
+import { VersionSwitcher } from '@/components/version-switcher'
 import {
   Sidebar,
   SidebarContent,
@@ -13,141 +13,141 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar"
-import { SidebarOptInForm } from "@/components/sidebar-opt-in-form"
-import { useTheme } from "next-themes"
+  SidebarRail
+} from '@/components/ui/sidebar'
+import { SidebarOptInForm } from '@/components/sidebar-opt-in-form'
+import { useTheme } from 'next-themes'
 
 // This is sample data.
 const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
+  versions: ['1.0.1', '1.1.0-alpha', '2.0.0-beta1'],
   navMain: [
     {
-      title: "Getting Started",
-      url: "#",
+      title: 'Getting Started',
+      url: '#',
       items: [
         {
-          title: "Installation",
-          url: "#",
+          title: 'Installation',
+          url: '#'
         },
         {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
+          title: 'Project Structure',
+          url: '#'
+        }
+      ]
     },
     {
-      title: "Building Your Application",
-      url: "#",
+      title: 'Building Your Application',
+      url: '#',
       items: [
         {
-          title: "Routing",
-          url: "#",
+          title: 'Routing',
+          url: '#'
         },
         {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
+          title: 'Data Fetching',
+          url: '#',
+          isActive: true
         },
         {
-          title: "Rendering",
-          url: "#",
+          title: 'Rendering',
+          url: '#'
         },
         {
-          title: "Caching",
-          url: "#",
+          title: 'Caching',
+          url: '#'
         },
         {
-          title: "Styling",
-          url: "#",
+          title: 'Styling',
+          url: '#'
         },
         {
-          title: "Optimizing",
-          url: "#",
+          title: 'Optimizing',
+          url: '#'
         },
         {
-          title: "Configuring",
-          url: "#",
+          title: 'Configuring',
+          url: '#'
         },
         {
-          title: "Testing",
-          url: "#",
+          title: 'Testing',
+          url: '#'
         },
         {
-          title: "Authentication",
-          url: "#",
+          title: 'Authentication',
+          url: '#'
         },
         {
-          title: "Deploying",
-          url: "#",
+          title: 'Deploying',
+          url: '#'
         },
         {
-          title: "Upgrading",
-          url: "#",
+          title: 'Upgrading',
+          url: '#'
         },
         {
-          title: "Examples",
-          url: "#",
-        },
-      ],
+          title: 'Examples',
+          url: '#'
+        }
+      ]
     },
     {
-      title: "API Reference",
-      url: "#",
+      title: 'API Reference',
+      url: '#',
       items: [
         {
-          title: "Components",
-          url: "#",
+          title: 'Components',
+          url: '#'
         },
         {
-          title: "File Conventions",
-          url: "#",
+          title: 'File Conventions',
+          url: '#'
         },
         {
-          title: "Functions",
-          url: "#",
+          title: 'Functions',
+          url: '#'
         },
         {
-          title: "next.config.js Options",
-          url: "#",
+          title: 'next.config.js Options',
+          url: '#'
         },
         {
-          title: "CLI",
-          url: "#",
+          title: 'CLI',
+          url: '#'
         },
         {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
+          title: 'Edge Runtime',
+          url: '#'
+        }
+      ]
     },
     {
-      title: "Architecture",
-      url: "#",
+      title: 'Architecture',
+      url: '#',
       items: [
         {
-          title: "Accessibility",
-          url: "#",
+          title: 'Accessibility',
+          url: '#'
         },
         {
-          title: "Fast Refresh",
-          url: "#",
+          title: 'Fast Refresh',
+          url: '#'
         },
         {
-          title: "Next.js Compiler",
-          url: "#",
+          title: 'Next.js Compiler',
+          url: '#'
         },
         {
-          title: "Supported Browsers",
-          url: "#",
+          title: 'Supported Browsers',
+          url: '#'
         },
         {
-          title: "Turbopack",
-          url: "#",
-        },
-      ],
-    },
-  ],
+          title: 'Turbopack',
+          url: '#'
+        }
+      ]
+    }
+  ]
 }
 
 export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -156,10 +156,7 @@ export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) 
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <VersionSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
-        />
+        <VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
         <SearchForm />
       </SidebarHeader>
       <SidebarContent>
@@ -181,31 +178,28 @@ export function SidebarLeft({ ...props }: React.ComponentProps<typeof Sidebar>) 
           </SidebarGroup>
         ))}
 
-
         <SidebarGroup>
           <SidebarGroupLabel>Theme</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={() => setTheme("light")}>
+                <SidebarMenuButton asChild onClick={() => setTheme('light')}>
                   <a href="#">Light</a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={() => setTheme("dark")}>
+                <SidebarMenuButton asChild onClick={() => setTheme('dark')}>
                   <a href="#">Dark</a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={() => setTheme("system")}>
+                <SidebarMenuButton asChild onClick={() => setTheme('system')}>
                   <a href="#">System</a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-
       </SidebarContent>
       <SidebarFooter>
         <div className="p-1">

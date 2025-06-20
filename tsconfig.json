@@ -3,14 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
+      "@/*": ["./src/*"]
     },
-    "types": [
-      "vitest/globals",
-      "@testing-library/jest-dom",
-    ]
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "references": [
     {

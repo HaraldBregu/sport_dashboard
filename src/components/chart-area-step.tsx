@@ -1,5 +1,5 @@
-import { Activity, TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Activity, TrendingUp } from 'lucide-react'
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 
 import {
   Card,
@@ -7,32 +7,32 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+  CardTitle
+} from '@/components/ui/card'
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+  ChartTooltipContent
+} from '@/components/ui/chart'
 
-export const description = "A step area chart"
+export const description = 'A step area chart'
 
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { month: 'January', desktop: 186 },
+  { month: 'February', desktop: 305 },
+  { month: 'March', desktop: 237 },
+  { month: 'April', desktop: 73 },
+  { month: 'May', desktop: 209 },
+  { month: 'June', desktop: 214 }
 ]
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
-    icon: Activity,
-  },
+    label: 'Desktop',
+    color: 'var(--chart-1)',
+    icon: Activity
+  }
 } satisfies ChartConfig
 
 export function ChartAreaStep() {
@@ -40,9 +40,7 @@ export function ChartAreaStep() {
     <Card>
       <CardHeader>
         <CardTitle>Area Chart - Step</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+        <CardDescription>Showing total visitors for the last 6 months</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -51,7 +49,7 @@ export function ChartAreaStep() {
             data={chartData}
             margin={{
               left: 12,
-              right: 12,
+              right: 12
             }}
           >
             <CartesianGrid vertical={false} />
@@ -62,10 +60,7 @@ export function ChartAreaStep() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Area
               dataKey="desktop"
               type="step"
