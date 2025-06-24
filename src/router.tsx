@@ -1,9 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom'
-import RenderTest from './pages/render-test'
+import EditorPage from './pages/editor/page'
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <RenderTest />
+    element: <EditorPage />
   }
 ])
