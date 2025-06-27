@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import {
   Bold,
@@ -74,6 +75,89 @@ export default function Toolbar({ className }: ToolbarProps) {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Redo (Ctrl+Y)</TooltipContent>
+          </Tooltip>
+
+          <Separator orientation="vertical" className="h-6" />
+        </div>
+
+        {/* Heading/Body Selector */}
+        <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Select defaultValue="body">
+                <SelectTrigger className="w-[120px] h-8">
+                  <SelectValue placeholder="Text style" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="h1">Heading 1</SelectItem>
+                  <SelectItem value="h2">Heading 2</SelectItem>
+                  <SelectItem value="h3">Heading 3</SelectItem>
+                  <SelectItem value="h4">Heading 4</SelectItem>
+                  <SelectItem value="h5">Heading 5</SelectItem>
+                  <SelectItem value="h6">Heading 6</SelectItem>
+                  <SelectItem value="body">Body Text</SelectItem>
+                </SelectContent>
+              </Select>
+            </TooltipTrigger>
+            <TooltipContent>Text Style</TooltipContent>
+          </Tooltip>
+
+          <Separator orientation="vertical" className="h-6" />
+        </div>
+
+        {/* Font Family Selector */}
+        <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Select defaultValue="inter">
+                <SelectTrigger className="w-[120px] h-8">
+                  <SelectValue placeholder="Font" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="inter">Inter</SelectItem>
+                  <SelectItem value="arial">Arial</SelectItem>
+                  <SelectItem value="times">Times New Roman</SelectItem>
+                  <SelectItem value="georgia">Georgia</SelectItem>
+                  <SelectItem value="verdana">Verdana</SelectItem>
+                  <SelectItem value="helvetica">Helvetica</SelectItem>
+                  <SelectItem value="courier">Courier New</SelectItem>
+                  <SelectItem value="monaco">Monaco</SelectItem>
+                </SelectContent>
+              </Select>
+            </TooltipTrigger>
+            <TooltipContent>Font Family</TooltipContent>
+          </Tooltip>
+
+          <Separator orientation="vertical" className="h-6" />
+        </div>
+
+        {/* Font Size Selector */}
+        <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Select defaultValue="16">
+                <SelectTrigger className="w-[80px] h-8">
+                  <SelectValue placeholder="Size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="8">8px</SelectItem>
+                  <SelectItem value="10">10px</SelectItem>
+                  <SelectItem value="12">12px</SelectItem>
+                  <SelectItem value="14">14px</SelectItem>
+                  <SelectItem value="16">16px</SelectItem>
+                  <SelectItem value="18">18px</SelectItem>
+                  <SelectItem value="20">20px</SelectItem>
+                  <SelectItem value="24">24px</SelectItem>
+                  <SelectItem value="28">28px</SelectItem>
+                  <SelectItem value="32">32px</SelectItem>
+                  <SelectItem value="36">36px</SelectItem>
+                  <SelectItem value="48">48px</SelectItem>
+                  <SelectItem value="64">64px</SelectItem>
+                  <SelectItem value="72">72px</SelectItem>
+                </SelectContent>
+              </Select>
+            </TooltipTrigger>
+            <TooltipContent>Font Size</TooltipContent>
           </Tooltip>
 
           <Separator orientation="vertical" className="h-6" />

@@ -1,5 +1,5 @@
-import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
-import { useEditor, EditorContent, Editor, BubbleMenu } from '@tiptap/react';
+import React, { useEffect, forwardRef, useImperativeHandle, useState } from 'react';
+import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
@@ -7,88 +7,16 @@ import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import Highlight from '@tiptap/extension-highlight';
-import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import FontFamily from '@tiptap/extension-font-family';
 import CodeBlock from '@tiptap/extension-code-block';
-import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
-import { Button } from '../ui/button';
-
-import { Plugin, PluginKey } from 'prosemirror-state'
-import { Extension } from '@tiptap/core'
-
-
-const MyCustomPlugin = Extension.create({
-    name: 'customBubbleMenuPlugin',
-
-    addStorage() {
-        return {
-            isRightClicked: false,
-        }
-    },
-
-    addProseMirrorPlugins() {
-        return [
-            new Plugin({
-                key: new PluginKey('customBubbleMenuPlugin'),
-                props: {
-                    handleDOMEvents: {
-                        contextmenu: (view, event) => {
-                            event.preventDefault();
-
-                            // Get the click position in the editor
-                            const clickPosition = view.posAtCoords({ left: event.clientX, top: event.clientY });
-
-                            if (clickPosition !== null) {
-                                this.storage.isRightClicked = true;
-                                console.log('isRightClicked', this.storage.isRightClicked);
-                                // const tr2 = view.state.tr;
-                                // view.dispatch(tr2);
-
-                                // Create a minimal selection at the click position
-                                // const pos = clickPosition.pos;
-                                // const vdf = TextSelection.near(view.state.doc.resolve(pos))
-                                // const tr = view.state.tr.setSelection(vdf);
-                                // console.log('vdf', tr);
-
-                                // const pos = clickPosition.pos;
-                                // const selection = TextSelection.near(view.state.doc.resolve(pos));
-                                // const tr = view.state.tr.setSelection(selection);
-                                // view.dispatch(tr);
-
-
-                                view.dispatch(view.state.tr)
-                                // this.editor.view.dispatch(tr3);
-
-                                // const { from, to } = view.state.selection;
-                                // const testSelection = TextSelection.create(view.state.doc, from, to);
-                                // const tr3 = view.state.tr.setSelection(testSelection);
-                                // view.dispatch(tr3);
+import Paragraph from '@tiptap/extension-paragraph';
+import ContextMenu from './context-menu';
+import Heading from '@tiptap/extension-heading';
+import TextStyleExtended from './extensions/textstyle-extension';
 
 
 
-                                // setTimeout(() => {
-                                //     this.storage.isRightClicked = false;
-                                //     const resetTr = view.state.tr;
-                                //     view.dispatch(resetTr);
-                                // }, 1000);
-                            }
-
-                            return true;
-                        },
-                        mousedown: (view) => {
-                            if (this.storage.isRightClicked) {
-                                this.storage.isRightClicked = false;
-                                view.dispatch(view.state.tr);
-                            }
-                            return false;
-                        }
-                    }
-                }
-            })
-        ]
-    }
-})
 
 export interface TextEditorProps {
     content?: string;
@@ -119,11 +47,12 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
     className = '',
     style = {},
 }, ref) => {
+
     const editor = useEditor({
-        shouldRerenderOnTransaction: false,
         extensions: [
-            MyCustomPlugin,
-            StarterKit,
+            StarterKit.configure({
+                heading: false,
+            }),
             Placeholder.configure({
                 placeholder,
             }),
@@ -145,15 +74,46 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
             Highlight.configure({
                 multicolor: true,
             }),
-            TextStyle,
+            TextStyleExtended,
             Color,
-            FontFamily,
+            FontFamily.configure({
+                types: ['textStyle']
+            }),
             CodeBlock.configure({
                 HTMLAttributes: {
                     class: 'bg-gray-100 p-4 rounded-md font-mono text-sm',
                 },
             }),
+            Heading.configure({
+                levels: [1, 2, 3, 4, 5, 6],
+            }),
+            Paragraph.configure({
+                HTMLAttributes: {
+                    class: 'mb-2',
+                },
+            }),
         ],
+        editorProps: {
+            attributes: {
+                class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4",
+            },
+            handleDOMEvents: {
+                contextmenu: (view, event) => {
+                    event.preventDefault()
+
+                    // Only show context menu if there's a text selection
+                    const { selection } = view.state
+                    if (selection.empty) return false
+
+                    setContextMenu({
+                        x: event.clientX,
+                        y: event.clientY,
+                    })
+
+                    return true
+                },
+            },
+        },
         content,
         editable,
         onUpdate: ({ editor }) => {
@@ -168,14 +128,14 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
 
     useImperativeHandle(ref, () => ({
         editor,
-        getHTML: () => editor?.getHTML() || '',
-        getText: () => editor?.getText() || '',
-        setContent: (content: string) => editor?.commands.setContent(content),
-        clear: () => editor?.commands.clearContent(),
-        focus: () => editor?.commands.focus(),
-        blur: () => editor?.commands.blur(),
-        isEditable: () => editor?.isEditable || false,
-        setEditable: (editable: boolean) => editor?.setEditable(editable),
+        getHTML: () => editor.getHTML() || '',
+        getText: () => editor.getText() || '',
+        setContent: (content: string) => editor.commands.setContent(content),
+        clear: () => editor.commands.clearContent(),
+        focus: () => editor.commands.focus(),
+        blur: () => editor.commands.blur(),
+        isEditable: () => editor.isEditable || false,
+        setEditable: (editable: boolean) => editor.setEditable(editable),
     }), [editor]);
 
     useEffect(() => {
@@ -185,68 +145,29 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
     }, [content, editor]);
 
     useEffect(() => {
-        if (editor) {
-            editor.setEditable(editable);
-        }
+        editor.setEditable(editable);
     }, [editable, editor]);
+
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
 
     return (
         <>
-            {editor && <BubbleMenu
-                pluginKey="customBubbleMenuPlugin"
-                editor={editor}
-                shouldShow={({ editor }) => {
-                    // Get the custom plugin extension
-                    const customPlugin = editor.extensionManager.extensions.find(
-                        ext => ext.name === 'customBubbleMenuPlugin'
-                    );
-
-                    // Check if right-click is active and there's a selection
-                    // const { from, to } = editor.state.selection;
-                    // const hasSelection = from !== to;
-                    const isRightClicked = customPlugin?.storage?.isRightClicked || false;
-
-                    console.log('isRightClicked', isRightClicked);
-                    return isRightClicked;
-                }}
-                tippyOptions={{
-                    duration: 100
-                }}
-            >
-                <div className="flex gap-2 bg-gray-100 p-2 rounded-md">
-                    <Button
-                        className="bg-blue-500 text-white px-2 py-1 rounded-md"
-                        onClick={() => {
-                            editor.chain().focus().toggleBold().run();
-                        }}
-                    >
-                        <BoldIcon className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        className="bg-blue-500 text-white px-2 py-1 rounded-md"
-                        onClick={() => {
-                            editor.chain().focus().toggleItalic().run();
-                        }}
-                    >
-                        <ItalicIcon className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        className="bg-blue-500 text-white px-2 py-1 rounded-md"
-                        onClick={() => {
-                            editor.chain().focus().toggleStrike().run();
-                        }}
-                    >
-                        <StrikethroughIcon className="w-4 h-4" />
-                    </Button>
-                </div>
-            </BubbleMenu>
-            }
-
             <EditorContent
                 editor={editor}
                 className={`prose prose-sm max-w-none focus:outline-none ${className}`}
                 style={style}
+                onContextMenu={(event) => {
+                    event.preventDefault();
+                }}
             />
+
+            {contextMenu && (
+                <ContextMenu
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    onClose={() => setContextMenu(null)}
+                    editor={editor} />
+            )}
         </>
     );
 });
@@ -254,3 +175,4 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
 TextEditor.displayName = 'TextEditor';
 
 export default TextEditor;
+
