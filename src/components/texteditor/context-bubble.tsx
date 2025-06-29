@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { createPortal } from 'react-dom'
 
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -15,6 +16,9 @@ type ContextBubbleContextProps = {
     showSubmenu: string | null
     setShowSubmenu: (submenu: string | null) => void
     selectionRect?: DOMRect | null
+    submenuPositions: Record<string, { x: number; y: number; width: number; height: number }>
+    setSubmenuPosition: (submenu: string, position: { x: number; y: number; width: number; height: number }) => void
+    portalContainerRef: React.RefObject<HTMLDivElement | null>
 }
 
 const ContextBubbleContext = React.createContext<ContextBubbleContextProps | null>(null)
@@ -42,10 +46,16 @@ function ContextBubbleProvider({
 }) {
     const [internalPosition, setInternalPosition] = React.useState(position)
     const [showSubmenu, setShowSubmenu] = React.useState<string | null>(null)
+    const [submenuPositions, setSubmenuPositions] = React.useState<Record<string, { x: number; y: number; width: number; height: number }>>({})
+    const portalContainerRef = React.useRef<HTMLDivElement | null>(null)
 
     React.useEffect(() => {
         setInternalPosition(position)
     }, [position])
+
+    const setSubmenuPosition = React.useCallback((submenu: string, position: { x: number; y: number; width: number; height: number }) => {
+        setSubmenuPositions(prev => ({ ...prev, [submenu]: position }))
+    }, [])
 
     const contextValue = React.useMemo<ContextBubbleContextProps>(
         () => ({
@@ -55,22 +65,27 @@ function ContextBubbleProvider({
             onClose,
             showSubmenu,
             setShowSubmenu,
-            selectionRect
+            selectionRect,
+            submenuPositions,
+            setSubmenuPosition,
+            portalContainerRef
         }),
-        [isOpen, internalPosition, onClose, showSubmenu, selectionRect]
+        [isOpen, internalPosition, onClose, showSubmenu, selectionRect, submenuPositions, setSubmenuPosition, portalContainerRef]
     )
 
     if (!isOpen) return null
 
     return (
         <ContextBubbleContext.Provider value={contextValue}>
-            <TooltipProvider delayDuration={0}>
+            <TooltipProvider delayDuration={100}>
                 <div
                     data-slot="context-bubble-wrapper"
                     className="fixed inset-0 z-50 pointer-events-none"
                     {...props}
                 >
                     {children}
+                    {/* Portal container for submenu content */}
+                    <div ref={portalContainerRef} className="pointer-events-none" />
                 </div>
             </TooltipProvider>
         </ContextBubbleContext.Provider>
@@ -301,7 +316,7 @@ const ContextBubbleSubmenu = React.forwardRef<
             ref={ref}
             data-slot="context-bubble-submenu"
             data-context-bubble="submenu"
-            className={cn('bg-background border rounded-lg shadow-lg p-2 z-50 min-w-[140px]', className)}
+            className={cn('relative', className)}
             {...props}
         >
             {children}
@@ -319,19 +334,39 @@ const ContextBubbleSubmenuTrigger = React.forwardRef<
     }
 >(({ asChild = false, submenu, className, children, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button'
-    const { setShowSubmenu } = useContextBubble()
+    const { showSubmenu, setShowSubmenu, setSubmenuPosition } = useContextBubble()
+    const triggerRef = React.useRef<HTMLButtonElement>(null)
+
+    const handleClick = () => {
+        if (triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect()
+            setSubmenuPosition(submenu, {
+                x: rect.left,
+                y: rect.bottom,
+                width: rect.width,
+                height: rect.height
+            })
+        }
+        setShowSubmenu(showSubmenu === submenu ? null : submenu)
+    }
 
     return (
         <Comp
-            ref={ref}
+            ref={(node) => {
+                if (typeof ref === 'function') {
+                    ref(node)
+                } else if (ref) {
+                    ref.current = node
+                }
+                triggerRef.current = node
+            }}
             data-slot="context-bubble-submenu-trigger"
             data-context-bubble="submenu-trigger"
             className={cn(
                 'w-full flex items-center justify-between px-2 py-1.5 text-sm hover:bg-accent rounded-sm transition-colors',
                 className
             )}
-            onMouseEnter={() => setShowSubmenu(submenu)}
-            onMouseLeave={() => setShowSubmenu(null)}
+            onClick={handleClick}
             {...props}
         >
             {children}
@@ -341,6 +376,116 @@ const ContextBubbleSubmenuTrigger = React.forwardRef<
 
 ContextBubbleSubmenuTrigger.displayName = 'ContextBubbleSubmenuTrigger'
 
+const ContextBubbleSubmenuContent = React.forwardRef<
+    HTMLDivElement,
+    React.ComponentProps<'div'> & {
+        submenu: string
+    }
+>(({ className, children, submenu, ...props }, ref) => {
+    const { showSubmenu, submenuPositions, portalContainerRef, setShowSubmenu } = useContextBubble()
+    const contentRef = React.useRef<HTMLDivElement>(null)
+    const [contentPosition, setContentPosition] = React.useState({ x: 0, y: 0 })
+
+    React.useLayoutEffect(() => {
+        if (showSubmenu === submenu && contentRef.current && submenuPositions[submenu]) {
+            const triggerPos = submenuPositions[submenu]
+            const contentRect = contentRef.current.getBoundingClientRect()
+
+            let x = triggerPos.x + triggerPos.width + 5
+            let y = triggerPos.y
+            if (x + contentRect.width > window.innerWidth - 10) {
+                x = triggerPos.x - contentRect.width - 5
+            }
+            if (y + contentRect.height > window.innerHeight - 10) {
+                y = triggerPos.y - contentRect.height
+            }
+            x = Math.max(10, Math.min(x, window.innerWidth - contentRect.width - 10))
+            y = Math.max(10, Math.min(y, window.innerHeight - contentRect.height - 10))
+            setContentPosition({ x, y })
+        }
+    }, [showSubmenu, submenu, submenuPositions])
+
+    React.useEffect(() => {
+        if (showSubmenu !== submenu) return
+        function handleClickOutside(event: MouseEvent) {
+            if (
+                contentRef.current &&
+                !contentRef.current.contains(event.target as Node)
+            ) {
+                setShowSubmenu(null)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [showSubmenu, submenu, setShowSubmenu])
+
+    if (showSubmenu !== submenu) {
+        return null
+    }
+
+    const content = (
+        <div
+            ref={(node) => {
+                if (typeof ref === 'function') {
+                    ref(node)
+                } else if (ref) {
+                    ref.current = node
+                }
+                contentRef.current = node
+            }}
+            data-slot="context-bubble-submenu-content"
+            data-context-bubble="submenu-content"
+            className={cn('bg-background border rounded-lg shadow-lg p-1 z-50 min-w-[140px] pointer-events-auto', className)}
+            style={{
+                position: 'fixed',
+                left: contentPosition.x,
+                top: contentPosition.y,
+                zIndex: CONTEXT_BUBBLE_Z_INDEX + 1
+            }}
+            {...props}
+        >
+            {children}
+        </div>
+    )
+
+    if (portalContainerRef.current) {
+        return createPortal(content, portalContainerRef.current)
+    }
+    return typeof document !== 'undefined'
+        ? createPortal(content, document.body)
+        : content
+})
+
+ContextBubbleSubmenuContent.displayName = 'ContextBubbleSubmenuContent'
+
+const ContextBubbleSubmenuItem = React.forwardRef<
+    HTMLButtonElement,
+    React.ComponentProps<'button'> & {
+        asChild?: boolean
+    }
+>(({ asChild = false, className, children, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'button'
+
+    return (
+        <Comp
+            ref={ref}
+            data-slot="context-bubble-submenu-item"
+            data-context-bubble="submenu-item"
+            className={cn(
+                'w-full flex items-center px-2 py-1.5 text-sm hover:bg-accent rounded-sm transition-colors cursor-pointer',
+                className
+            )}
+            {...props}
+        >
+            {children}
+        </Comp>
+    )
+})
+
+ContextBubbleSubmenuItem.displayName = 'ContextBubbleSubmenuItem'
+
 export {
     ContextBubble,
     ContextBubbleProvider,
@@ -348,5 +493,7 @@ export {
     ContextBubbleGroup,
     ContextBubbleSubmenu,
     ContextBubbleSubmenuTrigger,
+    ContextBubbleSubmenuContent,
+    ContextBubbleSubmenuItem,
     useContextBubble
 }

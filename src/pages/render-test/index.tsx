@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { memo, useCallback, useMemo, useState } from 'react'
+import { ContextBubblePrototype } from '@/components/texteditor/prototypes'
 
 const initialItems = new Array(40_987_964).fill(0).map((_, index) => {
   return {
@@ -31,6 +32,9 @@ export default function RenderTest() {
       <h1>Selected Item: {newItems?.id}</h1>
       <h1>Count: {count}</h1>
       <ButtonContainer onClick={handleClick} />
+
+      <hr className="my-8" />
+      <ContextBubblePrototype />
     </div>
   )
 }
