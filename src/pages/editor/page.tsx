@@ -14,7 +14,7 @@ export default function EditorPage() {
           <div className="flex flex-col h-screen">
             <Header />
             <Toolbar />
-            <Content />
+            <Content placeholder="Start writing your content..." />
             <Footer />
           </div>
         </SidebarInset>

@@ -4,124 +4,97 @@ import { AlignRight, Heading2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 
-interface ContextMenuProps {
+interface ContextContainerProps {
     x: number
     y: number
     onClose: () => void
 }
 
-function ContextMenu({ x, y, onClose }: ContextMenuProps) {
+function ContextContainer({ x, y, onClose }: ContextContainerProps) {
     const [showColorSubmenu, setShowColorSubmenu] = useState(false)
     const [showHighlightSubmenu, setShowHighlightSubmenu] = useState(false)
     const [showRemoveSubmenu, setShowRemoveSubmenu] = useState(false)
+    const [clickedItemPosition, setClickedItemPosition] = useState({ x: 0, y: 0 })
 
     const menuRef = useRef<HTMLDivElement>(null)
     const [position, setPosition] = useState({ x, y })
-    const [menuDimensions, setMenuDimensions] = useState({ width: 200, height: 0 })
 
     // Calculate submenu position to ensure it stays inside viewport
     const getSubmenuPosition = (submenuWidth: number, submenuHeight: number = 100) => {
-        const { width: menuWidth, height: menuHeight } = menuDimensions
         const viewportWidth = window.innerWidth
         const viewportHeight = window.innerHeight
 
-        // Calculate potential positions
-        const rightPosition = position.x + menuWidth + 4 // 4px margin
-        const leftPosition = position.x - submenuWidth - 4 // 4px margin
-        const bottomPosition = position.y + submenuHeight
-        const topPosition = position.y - submenuHeight + menuHeight
+        // Use the clicked item's position for submenu positioning
+        const itemLeft = clickedItemPosition.x
+        const itemRight = clickedItemPosition.x + 200 // Approximate item width
+        const itemTop = clickedItemPosition.y
+        const itemBottom = clickedItemPosition.y + 40 // Approximate item height
 
-        let submenuStyle: React.CSSProperties = {}
+        let submenuX = 0
+        let submenuY = 0
 
-        // Horizontal positioning with fallback logic
-        if (rightPosition + submenuWidth <= viewportWidth) {
-            // Position submenu to the right of the main menu
-            submenuStyle = {
-                left: '100%',
-                right: 'auto',
-                marginLeft: '4px',
-                marginRight: '0'
-            }
-        } else if (leftPosition >= 0) {
-            // Position submenu to the left of the main menu
-            submenuStyle = {
-                left: 'auto',
-                right: '100%',
-                marginLeft: '0',
-                marginRight: '4px'
-            }
+        // Horizontal positioning - try right first, then left
+        if (itemRight + submenuWidth + 4 <= viewportWidth) {
+            // Position submenu to the right of the clicked item
+            submenuX = itemRight + 4
+        } else if (itemLeft - submenuWidth - 4 >= 0) {
+            // Position submenu to the left of the clicked item
+            submenuX = itemLeft - submenuWidth - 4
         } else {
-            // If both sides overflow, try to fit the submenu by adjusting its position
-            const availableRightSpace = viewportWidth - rightPosition
-            const availableLeftSpace = leftPosition + submenuWidth
+            // If both sides overflow, try to fit by adjusting position
+            const availableRightSpace = viewportWidth - itemRight
+            const availableLeftSpace = itemLeft
 
-            if (availableRightSpace > availableLeftSpace && availableRightSpace > submenuWidth * 0.8) {
-                // Position to the right but with reduced margin
-                submenuStyle = {
-                    left: '100%',
-                    right: 'auto',
-                    marginLeft: '2px',
-                    marginRight: '0'
-                }
-            } else if (availableLeftSpace > submenuWidth * 0.8) {
-                // Position to the left but with reduced margin
-                submenuStyle = {
-                    left: 'auto',
-                    right: '100%',
-                    marginLeft: '0',
-                    marginRight: '2px'
-                }
+            if (availableRightSpace >= submenuWidth * 0.8) {
+                // Position to the right with reduced margin
+                submenuX = itemRight + 2
+            } else if (availableLeftSpace >= submenuWidth * 0.8) {
+                // Position to the left with reduced margin
+                submenuX = itemLeft - submenuWidth - 2
             } else {
-                // Default to right positioning
-                submenuStyle = {
-                    left: '100%',
-                    right: 'auto',
-                    marginLeft: '4px',
-                    marginRight: '0'
-                }
+                // If still can't fit, position it to the right but ensure it doesn't overflow
+                submenuX = Math.max(10, viewportWidth - submenuWidth - 10)
             }
         }
 
-        // Vertical positioning with fallback logic
-        if (bottomPosition <= viewportHeight) {
-            // Position submenu at the top of the main menu
-            submenuStyle.top = '0'
-            submenuStyle.bottom = 'auto'
-        } else if (topPosition >= 0) {
-            // Position submenu at the bottom of the main menu
-            submenuStyle.top = 'auto'
-            submenuStyle.bottom = '0'
+        // Vertical positioning - try top first, then bottom
+        if (itemTop + submenuHeight <= viewportHeight) {
+            // Position submenu at the top of the clicked item
+            submenuY = itemTop
+        } else if (itemBottom - submenuHeight >= 0) {
+            // Position submenu at the bottom of the clicked item
+            submenuY = itemBottom - submenuHeight
         } else {
             // If both top and bottom overflow, try to fit by adjusting position
-            const availableBottomSpace = viewportHeight - position.y
-            const availableTopSpace = position.y + menuHeight
+            const availableBottomSpace = viewportHeight - itemTop
+            const availableTopSpace = itemBottom
 
-            if (availableBottomSpace > availableTopSpace && availableBottomSpace > submenuHeight * 0.8) {
-                submenuStyle.top = '0'
-                submenuStyle.bottom = 'auto'
-            } else if (availableTopSpace > submenuHeight * 0.8) {
-                submenuStyle.top = 'auto'
-                submenuStyle.bottom = '0'
+            if (availableBottomSpace >= submenuHeight * 0.8) {
+                submenuY = itemTop
+            } else if (availableTopSpace >= submenuHeight * 0.8) {
+                submenuY = itemBottom - submenuHeight
             } else {
-                // Default to top positioning
-                submenuStyle.top = '0'
-                submenuStyle.bottom = 'auto'
+                // Default to top positioning but ensure it doesn't overflow
+                submenuY = Math.max(10, viewportHeight - submenuHeight - 10)
             }
         }
 
-        return submenuStyle
+        // Ensure final position is within viewport bounds
+        submenuX = Math.max(10, Math.min(submenuX, viewportWidth - submenuWidth - 10))
+        submenuY = Math.max(10, Math.min(submenuY, viewportHeight - submenuHeight - 10))
+
+        return {
+            position: 'fixed' as const,
+            left: submenuX,
+            top: submenuY,
+            zIndex: 60
+        }
     }
 
     useEffect(() => {
         if (menuRef.current) {
             const menuElement = menuRef.current
             const menuRect = menuElement.getBoundingClientRect()
-
-            // Store actual menu dimensions
-            setMenuDimensions({
-                width: menuRect.width,
-                height: menuRect.height
-            })
 
             let adjustedX = x
             let adjustedY = y
@@ -461,7 +434,11 @@ function ContextMenu({ x, y, onClose }: ContextMenuProps) {
                 <div className="relative">
                     <button
                         className="w-full flex items-center justify-between px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                        onMouseEnter={() => setShowColorSubmenu(true)}
+                        onMouseEnter={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            setClickedItemPosition({ x: rect.left, y: rect.top })
+                            setShowColorSubmenu(true)
+                        }}
                         onMouseLeave={() => setShowColorSubmenu(false)}
                     >
                         <div className="flex items-center">
@@ -473,23 +450,23 @@ function ContextMenu({ x, y, onClose }: ContextMenuProps) {
 
                     {showColorSubmenu && (
                         <div
-                            className="absolute left-full top-0 ml-1 bg-background border rounded-lg shadow-lg p-2 z-50"
+                            className="bg-background border rounded-lg shadow-lg p-2 z-50 min-w-[140px]"
                             onMouseEnter={() => setShowColorSubmenu(true)}
                             onMouseLeave={() => setShowColorSubmenu(false)}
-                            style={getSubmenuPosition(120, 80)}
+                            style={getSubmenuPosition(140, 100)}
                         >
-                            <div className="grid grid-cols-4 gap-1">
+                            <div className="grid grid-cols-4 gap-1.5">
                                 {textColors.map((color) => (
                                     <button
                                         key={color}
-                                        className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
+                                        className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
                                         style={{ backgroundColor: color }}
                                         onClick={() => {
                                             // editor.chain().focus().setColor(color).run()
                                             onClose()
                                         }}
                                         title={`Set text color to ${color}`}
-                                    />
+                                    ></button>
                                 ))}
                             </div>
                         </div>
@@ -500,7 +477,11 @@ function ContextMenu({ x, y, onClose }: ContextMenuProps) {
                 <div className="relative">
                     <button
                         className="w-full flex items-center justify-between px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                        onMouseEnter={() => setShowHighlightSubmenu(true)}
+                        onMouseEnter={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            setClickedItemPosition({ x: rect.left, y: rect.top })
+                            setShowHighlightSubmenu(true)
+                        }}
                         onMouseLeave={() => setShowHighlightSubmenu(false)}
                     >
                         <div className="flex items-center">
@@ -512,176 +493,70 @@ function ContextMenu({ x, y, onClose }: ContextMenuProps) {
 
                     {showHighlightSubmenu && (
                         <div
-                            className="absolute left-full top-0 ml-1 bg-background border rounded-lg shadow-lg p-2 z-50"
+                            className="bg-background border rounded-lg shadow-lg p-2 z-50 min-w-[140px]"
                             onMouseEnter={() => setShowHighlightSubmenu(true)}
                             onMouseLeave={() => setShowHighlightSubmenu(false)}
-                            style={getSubmenuPosition(120, 80)}
+                            style={getSubmenuPosition(140, 100)}
                         >
-                            <div className="grid grid-cols-4 gap-1">
+                            <div className="grid grid-cols-4 gap-1.5">
                                 {highlightColors.map((color) => (
                                     <button
                                         key={color}
-                                        className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
+                                        className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
                                         style={{ backgroundColor: color }}
                                         onClick={() => {
-                                            // editor.chain().focus().toggleHighlight({ color }).run()
+                                            // editor.chain().focus().setHighlight(color).run()
                                             onClose()
                                         }}
-                                        title={`Highlight with ${color}`}
-                                    />
+                                        title={`Set highlight color to ${color}`}
+                                    ></button>
                                 ))}
                             </div>
                         </div>
                     )}
                 </div>
 
-                <Separator className="my-1" />
-
-                {/* Other Actions */}
-                <button
-                    className="w-full flex items-center px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                    onClick={() => {
-                        // editor.chain().focus().setHorizontalRule().run()
-                        onClose()
-                    }}
-                >
-                    <Minus className="mr-2 h-4 w-4" />
-                    Insert Horizontal Rule
-                </button>
-
-                <button
-                    className="w-full flex items-center px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                    onClick={() => {
-                        // editor.chain().focus().clearNodes().unsetAllMarks().run()
-                        onClose()
-                    }}
-                >
-                    <Type className="mr-2 h-4 w-4" />
-                    Clear All Formatting
-                </button>
-
-                {/* Remove Colors Submenu */}
+                {/* Remove Formatting */}
                 <div className="relative">
                     <button
                         className="w-full flex items-center justify-between px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                        onMouseEnter={() => setShowRemoveSubmenu(true)}
+                        onMouseEnter={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            setClickedItemPosition({ x: rect.left, y: rect.top })
+                            setShowRemoveSubmenu(true)
+                        }}
                         onMouseLeave={() => setShowRemoveSubmenu(false)}
                     >
                         <div className="flex items-center">
-                            <Palette className="mr-2 h-4 w-4" />
-                            Remove Colors
+                            <Minus className="mr-2 h-4 w-4" />
+                            Remove Formatting
                         </div>
                         <ChevronRight className="h-4 w-4" />
                     </button>
 
                     {showRemoveSubmenu && (
                         <div
-                            className="absolute left-full top-0 ml-1 bg-background border rounded-lg shadow-lg py-1 z-50 min-w-40"
+                            className="bg-background border rounded-lg shadow-lg p-2 z-50 min-w-[140px]"
                             onMouseEnter={() => setShowRemoveSubmenu(true)}
                             onMouseLeave={() => setShowRemoveSubmenu(false)}
-                            style={getSubmenuPosition(160, 120)}
+                            style={getSubmenuPosition(140, 100)}
                         >
-                            <button
-                                className="w-full flex items-center px-2 py-1.5 text-sm hover:bg-accent"
-                                onClick={() => {
-                                    // editor.chain().focus().unsetColor().run()
-                                    onClose()
-                                }}
-                            >
-                                Remove Text Color
-                            </button>
-                            <button
-                                className="w-full flex items-center px-2 py-1.5 text-sm hover:bg-accent"
-                                onClick={() => {
-                                    // editor.chain().focus().unsetHighlight().run()
-                                    onClose()
-                                }}
-                            >
-                                Remove Highlight
-                            </button>
-                            <button
-                                className="w-full flex items-center px-2 py-1.5 text-sm hover:bg-accent"
-                                onClick={() => {
-                                    // editor.chain().focus().unsetColor().unsetHighlight().run()
-                                    onClose()
-                                }}
-                            >
-                                Remove All Colors
-                            </button>
+                            <div className="grid grid-cols-4 gap-1.5">
+                                <button
+                                    className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
+                                    onClick={() => {
+                                        // editor.chain().focus().reset().run()
+                                        onClose()
+                                    }}
+                                    title="Remove all formatting"
+                                ></button>
+                            </div>
                         </div>
                     )}
                 </div>
             </div>
-
-            {/* <div className="flex items-center gap-1 p-1">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                        onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                >
-                    <Bold className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                        onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                >
-                    <Italic className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                        onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                >
-                    <UnderlineIcon className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                        onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                >
-                    <Strikethrough className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                        onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                >
-                    <Code className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                        onClose()
-                    }}
-                    className="h-8 w-8 p-0"
-                >
-                    <Highlighter className="h-4 w-4" />
-                </Button>
-            </div> */}
         </div>
     )
 }
 
-export default ContextMenu;
+export default ContextContainer

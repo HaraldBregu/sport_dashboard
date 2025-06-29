@@ -1,4 +1,4 @@
-import React, { useEffect, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -11,21 +11,8 @@ import Color from '@tiptap/extension-color';
 import FontFamily from '@tiptap/extension-font-family';
 import CodeBlock from '@tiptap/extension-code-block';
 import Paragraph from '@tiptap/extension-paragraph';
-import ContextMenu from './context-menu';
 import Heading from '@tiptap/extension-heading';
 import TextStyleExtended from './extensions/textstyle-extension';
-
-
-
-
-export interface TextEditorProps {
-    content?: string;
-    placeholder?: string;
-    onChange?: (content: string) => void;
-    editable?: boolean;
-    className?: string;
-    style?: React.CSSProperties;
-}
 
 export interface TextEditorRef {
     editor: Editor | null;
@@ -39,10 +26,21 @@ export interface TextEditorRef {
     setEditable: (editable: boolean) => void;
 }
 
+export interface TextEditorProps {
+    content?: unknown;
+    placeholder?: string;
+    onChange?: (content: string) => void;
+    onClick?: (event: MouseEvent) => void;
+    editable?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
+}
+
 export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
-    content = '',
+    content,
     placeholder = 'Start writing...',
     onChange,
+    onClick,
     editable = true,
     className = '',
     style = {},
@@ -101,23 +99,20 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
                 contextmenu: (view, event) => {
                     event.preventDefault()
 
-                    // Only show context menu if there's a text selection
                     const { selection } = view.state
                     if (selection.empty) return false
 
-                    setContextMenu({
-                        x: event.clientX,
-                        y: event.clientY,
-                    })
-
+                    onClick?.(event)
                     return true
                 },
             },
         },
-        content,
+        content: content || '',
         editable,
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
+            const json = editor.getJSON();
+            console.log(JSON.stringify(json, null, 2))
             onChange?.(html);
         },
     });
@@ -140,15 +135,13 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
 
     useEffect(() => {
         if (editor && content !== editor.getHTML()) {
-            editor.commands.setContent(content);
+            editor.commands.setContent(content || '');
         }
     }, [content, editor]);
 
     useEffect(() => {
         editor.setEditable(editable);
     }, [editable, editor]);
-
-    const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
 
     return (
         <>
@@ -160,14 +153,6 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
                     event.preventDefault();
                 }}
             />
-
-            {contextMenu && (
-                <ContextMenu
-                    x={contextMenu.x}
-                    y={contextMenu.y}
-                    onClose={() => setContextMenu(null)}
-                    editor={editor} />
-            )}
         </>
     );
 });
