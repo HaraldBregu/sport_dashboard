@@ -31,6 +31,7 @@ export interface TextEditorProps {
     placeholder?: string;
     onChange?: (content: string) => void;
     onClick?: (event: MouseEvent) => void;
+    onContextMenu?: (event: React.MouseEvent) => void;
     editable?: boolean;
     className?: string;
     style?: React.CSSProperties;
@@ -41,9 +42,11 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
     placeholder = 'Start writing...',
     onChange,
     onClick,
+    onContextMenu,
     editable = true,
     className = '',
     style = {},
+    ...props
 }, ref) => {
 
     const editor = useEditor({
@@ -149,9 +152,8 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
                 editor={editor}
                 className={`prose prose-sm max-w-none focus:outline-none ${className}`}
                 style={style}
-                onContextMenu={(event) => {
-                    event.preventDefault();
-                }}
+                onContextMenu={onContextMenu}
+                {...props}
             />
         </>
     );

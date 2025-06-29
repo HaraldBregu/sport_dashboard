@@ -33,8 +33,10 @@ import {
   Bookmark,
   MessageCircle,
   Sigma,
-  Indent,
   AlignJustify,
+  Heading4,
+  Heading5,
+  Heading6,
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { testContent } from './data'
@@ -76,27 +78,19 @@ const Content = ({ placeholder }: ContentProps) => {
     <>
       <div className="flex flex-1 flex-col">
         <div className="grid grid-cols-2 gap-4 h-full">
-          <div
+          <TextEditor
+            ref={editorRef}
+            placeholder={placeholder}
             className="h-full"
+            content={testContent}
             onContextMenu={handleContextMenu}
-          >
-            <TextEditor
-              ref={editorRef}
-              placeholder={placeholder}
-              className="h-full"
-              content={testContent}
-            />
-          </div>
-          <div
+          />
+          <TextEditor
+            placeholder={placeholder}
             className="h-full"
+            content={testContent}
             onContextMenu={handleContextMenu}
-          >
-            <TextEditor
-              placeholder={placeholder}
-              className="h-full"
-              content={testContent}
-            />
-          </div>
+          />
         </div>
       </div>
 
@@ -202,11 +196,6 @@ const Content = ({ placeholder }: ContentProps) => {
               >
                 <AlignJustify className="h-4 w-4" />
               </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Indent"
-              >
-                <Indent className="h-4 w-4" />
-              </ContextBubbleButton>
             </ContextBubbleGroup>
             <Separator
               data-slot="context-bubble-separator"
@@ -217,7 +206,9 @@ const Content = ({ placeholder }: ContentProps) => {
               <ContextBubbleButton
                 tooltip="Add Link"
                 onClick={() => {
-
+                  const url = window.prompt('Enter URL:', 'https://')
+                  if (!url) return
+                  editorRef.current?.editor?.chain().focus().toggleLink({ href: url }).run()
                 }}
               >
                 <LinkIcon className="h-4 w-4" />
@@ -226,7 +217,7 @@ const Content = ({ placeholder }: ContentProps) => {
               <ContextBubbleButton
                 tooltip="Remove Link"
                 onClick={() => {
-
+                  editorRef.current?.editor?.chain().focus().unsetLink().run()
                 }}
               >
                 <Unlink className="h-4 w-4" />
@@ -241,22 +232,23 @@ const Content = ({ placeholder }: ContentProps) => {
               <ContextBubbleButton
                 tooltip="Bullet List"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleBulletList().run()
                 }}
               >
                 <List className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Numbered List"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleOrderedList().run()
                 }}
               >
                 <ListOrdered className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Quote"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleBlockquote().run()
                 }}
               >
                 <Quote className="h-4 w-4" />
@@ -271,30 +263,55 @@ const Content = ({ placeholder }: ContentProps) => {
               <ContextBubbleButton
                 tooltip="Heading 1"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleHeading({ level: 1 }).run()
                 }}
               >
                 <Heading1 className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Heading 2"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleHeading({ level: 2 }).run()
                 }}
               >
                 <Heading2 className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Heading 3"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleHeading({ level: 3 }).run()
                 }}
               >
                 <Heading3 className="h-4 w-4" />
               </ContextBubbleButton>
-
+              <ContextBubbleButton
+                tooltip="Heading 4"
+                onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleHeading({ level: 4 }).run()
+                }}
+              >
+                <Heading4 className="h-4 w-4" />
+              </ContextBubbleButton>
+              <ContextBubbleButton
+                tooltip="Heading 5"
+                onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleHeading({ level: 5 }).run()
+                }}
+              >
+                <Heading5 className="h-4 w-4" />
+              </ContextBubbleButton>
+              <ContextBubbleButton
+                tooltip="Heading 6"
+                onClick={() => {
+                  editorRef.current?.editor?.chain().focus().toggleHeading({ level: 6 }).run()
+                }}
+              >
+                <Heading6 className="h-4 w-4" />
+              </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Paragraph"
                 onClick={() => {
+                  editorRef.current?.editor?.chain().focus().setParagraph().run()
                 }}
               >
                 <Type className="h-4 w-4" />
