@@ -1,11 +1,8 @@
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { AlignCenter, AlignLeft, Bold, Code, Heading1, Heading3, Highlighter, Italic, LinkIcon, List, ListOrdered, Quote, Strikethrough, Type, UnderlineIcon, Unlink } from 'lucide-react'
-import { AlignRight, Heading2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const CONTEXT_BUBBLE_Z_INDEX = 50
@@ -295,27 +292,13 @@ function ContextBubbleGroup({
     )
 }
 
-function ContextBubbleSeparator({
-    className,
-    ...props
-}: React.ComponentProps<typeof Separator>) {
-    return (
-        <Separator
-            data-slot="context-bubble-separator"
-            data-context-bubble="separator"
-            className={cn('my-1', className)}
-            {...props}
-        />
-    )
-}
-
-function ContextBubbleSubmenu({
-    className,
-    children,
-    ...props
-}: React.ComponentProps<'div'>) {
+const ContextBubbleSubmenu = React.forwardRef<
+    HTMLDivElement,
+    React.ComponentProps<'div'>
+>(({ className, children, ...props }, ref) => {
     return (
         <div
+            ref={ref}
             data-slot="context-bubble-submenu"
             data-context-bubble="submenu"
             className={cn('bg-background border rounded-lg shadow-lg p-2 z-50 min-w-[140px]', className)}
@@ -324,23 +307,23 @@ function ContextBubbleSubmenu({
             {children}
         </div>
     )
-}
+})
 
-function ContextBubbleSubmenuTrigger({
-    asChild = false,
-    submenu,
-    className,
-    children,
-    ...props
-}: React.ComponentProps<'button'> & {
-    asChild?: boolean
-    submenu: string
-}) {
+ContextBubbleSubmenu.displayName = 'ContextBubbleSubmenu'
+
+const ContextBubbleSubmenuTrigger = React.forwardRef<
+    HTMLButtonElement,
+    React.ComponentProps<'button'> & {
+        asChild?: boolean
+        submenu: string
+    }
+>(({ asChild = false, submenu, className, children, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button'
     const { setShowSubmenu } = useContextBubble()
 
     return (
         <Comp
+            ref={ref}
             data-slot="context-bubble-submenu-trigger"
             data-context-bubble="submenu-trigger"
             className={cn(
@@ -354,241 +337,16 @@ function ContextBubbleSubmenuTrigger({
             {children}
         </Comp>
     )
-}
+})
 
-// Pre-built formatting buttons
-function ContextBubbleFormattingGroup() {
-    const { onClose } = useContextBubble()
-
-    return (
-        <ContextBubbleGroup>
-            <ContextBubbleButton
-                tooltip="Bold"
-                onClick={() => {
-                    // editor.chain().focus().toggleBold().run()
-                    onClose()
-                }}
-            >
-                <Bold className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Italic"
-                onClick={() => {
-                    // editor.chain().focus().toggleItalic().run()
-                    onClose()
-                }}
-            >
-                <Italic className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Underline"
-                onClick={() => {
-                    // editor.chain().focus().toggleUnderline().run()
-                    onClose()
-                }}
-            >
-                <UnderlineIcon className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Strikethrough"
-                onClick={() => {
-                    // editor.chain().focus().toggleStrike().run()
-                    onClose()
-                }}
-            >
-                <Strikethrough className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Code"
-                onClick={() => {
-                    // editor.chain().focus().toggleCode().run()
-                    onClose()
-                }}
-            >
-                <Code className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Highlight"
-                onClick={() => {
-                    // editor.chain().focus().toggleHighlight().run()
-                    onClose()
-                }}
-            >
-                <Highlighter className="h-4 w-4" />
-            </ContextBubbleButton>
-        </ContextBubbleGroup>
-    )
-}
-
-function ContextBubbleAlignmentGroup() {
-    const { onClose } = useContextBubble()
-
-    return (
-        <ContextBubbleGroup>
-            <ContextBubbleButton
-                tooltip="Align Left"
-                onClick={() => {
-                    // editor.chain().focus().setTextAlign("left").run()
-                    onClose()
-                }}
-            >
-                <AlignLeft className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Align Center"
-                onClick={() => {
-                    // editor.chain().focus().setTextAlign("center").run()
-                    onClose()
-                }}
-            >
-                <AlignCenter className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Align Right"
-                onClick={() => {
-                    // editor.chain().focus().setTextAlign("right").run()
-                    onClose()
-                }}
-            >
-                <AlignRight className="h-4 w-4" />
-            </ContextBubbleButton>
-        </ContextBubbleGroup>
-    )
-}
-
-function ContextBubbleLinksGroup() {
-    const { onClose } = useContextBubble()
-
-    return (
-        <ContextBubbleGroup>
-            <ContextBubbleButton
-                tooltip="Add Link"
-                onClick={() => {
-                    // setLink()
-                    onClose()
-                }}
-            >
-                <LinkIcon className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Remove Link"
-                onClick={() => {
-                    // editor.chain().focus().unsetLink().run()
-                    onClose()
-                }}
-            >
-                <Unlink className="h-4 w-4" />
-            </ContextBubbleButton>
-        </ContextBubbleGroup>
-    )
-}
-
-function ContextBubbleListsGroup() {
-    const { onClose } = useContextBubble()
-
-    return (
-        <ContextBubbleGroup>
-            <ContextBubbleButton
-                tooltip="Bullet List"
-                onClick={() => {
-                    // editor.chain().focus().toggleBulletList().run()
-                    onClose()
-                }}
-            >
-                <List className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Numbered List"
-                onClick={() => {
-                    // editor.chain().focus().toggleOrderedList().run()
-                    onClose()
-                }}
-            >
-                <ListOrdered className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Quote"
-                onClick={() => {
-                    // editor.chain().focus().toggleBlockquote().run()
-                    onClose()
-                }}
-            >
-                <Quote className="h-4 w-4" />
-            </ContextBubbleButton>
-        </ContextBubbleGroup>
-    )
-}
-
-function ContextBubbleHeadingsGroup() {
-    const { onClose } = useContextBubble()
-
-    return (
-        <ContextBubbleGroup>
-            <ContextBubbleButton
-                tooltip="Heading 1"
-                onClick={() => {
-                    // editor.chain().focus().toggleHeading({ level: 1 }).run()
-                    onClose()
-                }}
-            >
-                <Heading1 className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Heading 2"
-                onClick={() => {
-                    // editor.chain().focus().toggleHeading({ level: 2 }).run()
-                    onClose()
-                }}
-            >
-                <Heading2 className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Heading 3"
-                onClick={() => {
-                    // editor.chain().focus().toggleHeading({ level: 3 }).run()
-                    onClose()
-                }}
-            >
-                <Heading3 className="h-4 w-4" />
-            </ContextBubbleButton>
-
-            <ContextBubbleButton
-                tooltip="Paragraph"
-                onClick={() => {
-                    // editor.chain().focus().setParagraph().run()
-                    onClose()
-                }}
-            >
-                <Type className="h-4 w-4" />
-            </ContextBubbleButton>
-        </ContextBubbleGroup>
-    )
-}
+ContextBubbleSubmenuTrigger.displayName = 'ContextBubbleSubmenuTrigger'
 
 export {
     ContextBubble,
     ContextBubbleProvider,
     ContextBubbleButton,
     ContextBubbleGroup,
-    ContextBubbleSeparator,
     ContextBubbleSubmenu,
     ContextBubbleSubmenuTrigger,
-    ContextBubbleFormattingGroup,
-    ContextBubbleAlignmentGroup,
-    ContextBubbleLinksGroup,
-    ContextBubbleListsGroup,
-    ContextBubbleHeadingsGroup,
     useContextBubble
 }
