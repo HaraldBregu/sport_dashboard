@@ -776,6 +776,18 @@ export const testContent = {
     "#fcd34d", "#fbbf24", "#fb923c", "#f97316",
     // Medium cool  
     "#93c5fd", "#60a5fa", "#34d399", "#10b981",
+    // Dark neutrals
+    "#1f2937", "#111827", "#18181b", "#27272a",
+    // Dark warm
+    "#b45309", "#92400e", "#9a3412", "#7c2d12", 
+    // Dark cool
+    "#1d4ed8", "#1e40af", "#047857", "#065f46",
+    // Dark pink/purple
+    "#be185d", "#9d174d", "#7e22ce", "#6b21a8",
+    // Vibrant colors
+    "#f43f5e", "#06b6d4", "#14b8a6", "#8b5cf6",
+    // Muted colors
+    "#64748b", "#475569", "#334155", "#1e293b",
     // Medium pink/purple
     "#f472b6", "#e879f9", "#c084fc", "#a855f7"
   ]

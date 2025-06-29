@@ -386,9 +386,25 @@ function ContextBubbleSubmenus({
     const triggerRect = triggerRef.current.getBoundingClientRect()
     const submenuRect = submenuRef.current.getBoundingClientRect()
 
-    // Calculate available space on both sides
-    const spaceOnRight = window.innerWidth - (triggerRect.right + 10)
-    const spaceOnLeft = triggerRect.left - 10
+    // Find the context bubble element to get its actual width
+    const contextBubble = document.querySelector('[data-context-bubble="bubble"]') as HTMLElement
+    const bubbleRect = contextBubble?.getBoundingClientRect()
+
+    if (!bubbleRect) {
+      console.warn('Context bubble not found, using fallback positioning')
+      return {
+        position: 'fixed' as const,
+        left: triggerRect.right + 10,
+        top: triggerRect.top + (triggerRect.height / 2) - (submenuRect.height / 2),
+        zIndex: 60,
+        maxHeight: '300px',
+        overflowY: 'auto' as const
+      }
+    }
+
+    // Calculate available space on both sides using actual bubble width
+    const spaceOnRight = window.innerWidth - (bubbleRect.right + 10)
+    const spaceOnLeft = bubbleRect.left - 10
 
     // Determine optimal position based on available space
     let left: number
@@ -396,10 +412,10 @@ function ContextBubbleSubmenus({
 
     if (spaceOnRight >= submenuRect.width) {
       // Enough space on the right - position there
-      left = triggerRect.right + 10
+      left = bubbleRect.right + 10
     } else if (spaceOnLeft >= submenuRect.width) {
       // Enough space on the left - position there
-      left = triggerRect.left - submenuRect.width - 10
+      left = bubbleRect.left - submenuRect.width - 10
     } else {
       // Not enough space on either side - position where there's more space
       if (spaceOnRight > spaceOnLeft) {
@@ -425,6 +441,7 @@ function ContextBubbleSubmenus({
     console.log('Dynamic submenu positioning:', {
       triggerRect,
       submenuRect,
+      bubbleRect,
       spaceOnRight,
       spaceOnLeft,
       submenuPosition: { left, top },
@@ -466,44 +483,44 @@ function ContextBubbleSubmenus({
           ref={colorsSubmenuRef}
           style={submenuStyles.colors}
         >
-          <div className="grid grid-cols-4 gap-1.5">
-            {textColors.map((color) => (
-              <button
-                key={color}
-                className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
-                onClick={() => {
-                  // editor.chain().focus().setColor(color).run()
-                  console.log('Set text color:', color)
-                  onClose()
-                }}
-                title={`Set text color to ${color}`}
-              />
-            ))}
-          </div>
-        </ContextBubbleSubmenu>
+            <div className="grid grid-cols-4 gap-1.5">
+              {textColors.map((color) => (
+                <button
+                  key={color}
+                  className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: color }}
+                  onClick={() => {
+                    // editor.chain().focus().setColor(color).run()
+                    console.log('Set text color:', color)
+                    onClose()
+                  }}
+                  title={`Set text color to ${color}`}
+                />
+              ))}
+            </div>
+          </ContextBubbleSubmenu>
       )}
       {showSubmenu === 'highlight' && (
         <ContextBubbleSubmenu
           ref={highlightSubmenuRef}
           style={submenuStyles.highlight}
         >
-          <div className="grid grid-cols-4 gap-1.5">
-            {highlightColors.map((color) => (
-              <button
-                key={color}
-                className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
-                style={{ backgroundColor: color }}
-                onClick={() => {
-                  // editor.chain().focus().setHighlight(color).run()
-                  console.log('Set highlight color:', color)
-                  onClose()
-                }}
-                title={`Set highlight color to ${color}`}
-              />
-            ))}
-          </div>
-        </ContextBubbleSubmenu>
+            <div className="grid grid-cols-4 gap-1.5">
+              {highlightColors.map((color) => (
+                <button
+                  key={color}
+                  className="w-7 h-7 rounded border border-gray-300 hover:scale-110 transition-transform"
+                  style={{ backgroundColor: color }}
+                  onClick={() => {
+                    // editor.chain().focus().setHighlight(color).run()
+                    console.log('Set highlight color:', color)
+                    onClose()
+                  }}
+                  title={`Set highlight color to ${color}`}
+                />
+              ))}
+            </div>
+          </ContextBubbleSubmenu>
       )}
     </>
   )
