@@ -382,7 +382,7 @@ const ContextBubbleSubmenuContent = React.forwardRef<
         submenu: string
     }
 >(({ className, children, submenu, ...props }, ref) => {
-    const { showSubmenu, submenuPositions, portalContainerRef, setShowSubmenu } = useContextBubble()
+    const { showSubmenu, submenuPositions, portalContainerRef, setShowSubmenu, position } = useContextBubble()
     const contentRef = React.useRef<HTMLDivElement>(null)
     const [contentPosition, setContentPosition] = React.useState({ x: 0, y: 0 })
 
@@ -391,19 +391,43 @@ const ContextBubbleSubmenuContent = React.forwardRef<
             const triggerPos = submenuPositions[submenu]
             const contentRect = contentRef.current.getBoundingClientRect()
 
+            // Determine if the bubble is positioned above or below the selection
+            // If the bubble's y position is less than the trigger's y position, it's above
+            const isBubbleAbove = position.y < triggerPos.y
+
             let x = triggerPos.x + triggerPos.width + 5
             let y = triggerPos.y
+
+            // If bubble is above, position submenu above the trigger
+            if (isBubbleAbove) {
+                y = triggerPos.y - contentRect.height - 5
+            } else {
+                // If bubble is below, position submenu below the trigger
+                y = triggerPos.y + triggerPos.height + 5
+            }
+
+            // If there's not enough space to the right, position to the left
             if (x + contentRect.width > window.innerWidth - 10) {
                 x = triggerPos.x - contentRect.width - 5
             }
+
+            // If there's not enough space below, position above
             if (y + contentRect.height > window.innerHeight - 10) {
-                y = triggerPos.y - contentRect.height
+                y = triggerPos.y - contentRect.height - 5
             }
+
+            // If there's not enough space above, position below
+            if (y < 10) {
+                y = triggerPos.y + triggerPos.height + 5
+            }
+
+            // Ensure it doesn't go off-screen
             x = Math.max(10, Math.min(x, window.innerWidth - contentRect.width - 10))
             y = Math.max(10, Math.min(y, window.innerHeight - contentRect.height - 10))
+
             setContentPosition({ x, y })
         }
-    }, [showSubmenu, submenu, submenuPositions])
+    }, [showSubmenu, submenu, submenuPositions, position])
 
     React.useEffect(() => {
         if (showSubmenu !== submenu) return
@@ -437,12 +461,18 @@ const ContextBubbleSubmenuContent = React.forwardRef<
             }}
             data-slot="context-bubble-submenu-content"
             data-context-bubble="submenu-content"
-            className={cn('bg-background border rounded-lg shadow-lg p-1 z-50 min-w-[140px] pointer-events-auto', className)}
+            className={cn(
+                'bg-background border rounded-lg shadow-lg p-1 z-50 min-w-[140px] pointer-events-auto',
+                'max-h-[calc(100vh-20px)] overflow-y-auto',
+                className
+            )}
             style={{
                 position: 'fixed',
                 left: contentPosition.x,
                 top: contentPosition.y,
-                zIndex: CONTEXT_BUBBLE_Z_INDEX + 1
+                zIndex: CONTEXT_BUBBLE_Z_INDEX + 1,
+                maxHeight: 'calc(100vh - 20px)',
+                overflowY: 'auto'
             }}
             {...props}
         >

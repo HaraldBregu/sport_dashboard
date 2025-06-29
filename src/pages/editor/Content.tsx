@@ -22,7 +22,6 @@ import {
   LinkIcon,
   List,
   ListOrdered,
-  Palette,
   Quote,
   Strikethrough,
   UnderlineIcon,
@@ -31,6 +30,11 @@ import {
   Heading2,
   Heading3,
   Type,
+  Bookmark,
+  MessageCircle,
+  Sigma,
+  Indent,
+  AlignJustify,
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { testContent } from './data'
@@ -68,9 +72,6 @@ const Content = ({ placeholder }: ContentProps) => {
 
   const editorRef = useRef<TextEditorRef>(null)
 
-  const colorsTriggerRef = useRef<HTMLButtonElement>(null)
-
-  
   return (
     <>
       <div className="flex flex-1 flex-col">
@@ -177,7 +178,6 @@ const Content = ({ placeholder }: ContentProps) => {
               >
                 <AlignLeft className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Align Center"
                 onClick={() => {
@@ -186,7 +186,6 @@ const Content = ({ placeholder }: ContentProps) => {
               >
                 <AlignCenter className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Align Right"
                 onClick={() => {
@@ -194,6 +193,19 @@ const Content = ({ placeholder }: ContentProps) => {
                 }}
               >
                 <AlignRight className="h-4 w-4" />
+              </ContextBubbleButton>
+              <ContextBubbleButton
+                tooltip="Justify"
+                onClick={() => {
+                  editorRef.current?.editor?.chain().focus().setTextAlign("justify").run()
+                }}
+              >
+                <AlignJustify className="h-4 w-4" />
+              </ContextBubbleButton>
+              <ContextBubbleButton
+                tooltip="Indent"
+              >
+                <Indent className="h-4 w-4" />
               </ContextBubbleButton>
             </ContextBubbleGroup>
             <Separator
@@ -293,25 +305,189 @@ const Content = ({ placeholder }: ContentProps) => {
               data-context-bubble="separator"
               className={"my-1"}
             />
-
             <ContextBubbleSubmenu>
-              <ContextBubbleSubmenuTrigger submenu="colors" ref={colorsTriggerRef}>
+              <ContextBubbleSubmenuTrigger submenu="bookmarks">
                 <div className="flex items-center">
-                  <Palette className="mr-2 h-4 w-4" />
-                  Button with submenu
+                  <Bookmark className="mr-2 h-4 w-4" />
+                  Add a bookmark
                 </div>
                 <ChevronRight className="h-4 w-4" />
               </ContextBubbleSubmenuTrigger>
-              <ContextBubbleSubmenuContent submenu="colors">
-                <ContextBubbleSubmenuItem>Item one</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Item two</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Item two</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Item two</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Item two</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Item two</ContextBubbleSubmenuItem>
+              <ContextBubbleSubmenuContent submenu="bookmarks">
+                <ContextBubbleSubmenuItem>Category 1</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
               </ContextBubbleSubmenuContent>
             </ContextBubbleSubmenu>
-
+            <ContextBubbleSubmenu>
+              <ContextBubbleSubmenuTrigger submenu="comments">
+                <div className="flex items-center">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Add a comment
+                </div>
+                <ChevronRight className="h-4 w-4" />
+              </ContextBubbleSubmenuTrigger>
+              <ContextBubbleSubmenuContent submenu="comments">
+                <ContextBubbleSubmenuItem>Category 1</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
+              </ContextBubbleSubmenuContent>
+            </ContextBubbleSubmenu>
+            <ContextBubbleSubmenu>
+              <ContextBubbleSubmenuTrigger submenu="sigla">
+                <div className="flex items-center">
+                  <Sigma className="mr-2 h-4 w-4" />
+                  Add a siglum
+                </div>
+                <ChevronRight className="h-4 w-4" />
+              </ContextBubbleSubmenuTrigger>
+              <ContextBubbleSubmenuContent submenu="sigla">
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
+              </ContextBubbleSubmenuContent>
+            </ContextBubbleSubmenu>
 
           </ContextBubble>
         </ContextBubbleProvider>
