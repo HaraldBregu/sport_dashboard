@@ -96,7 +96,7 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
         ],
         editorProps: {
             attributes: {
-                class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4",
+                class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4 h-full",
             },
             handleDOMEvents: {
                 contextmenu: (view, event) => {
@@ -114,8 +114,8 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
         editable,
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
-            const json = editor.getJSON();
-            console.log(JSON.stringify(json, null, 2))
+            // const json = editor.getJSON();
+            // console.log(JSON.stringify(json, null, 2))
             onChange?.(html);
         },
     });
@@ -150,7 +150,7 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
         <>
             <EditorContent
                 editor={editor}
-                className={`prose prose-sm max-w-none focus:outline-none ${className}`}
+                className={`prose prose-sm max-w-none focus:outline-none h-full ${className}`}
                 style={style}
                 onContextMenu={onContextMenu}
                 {...props}

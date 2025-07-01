@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import TextEditor, { TextEditorRef } from '@/components/texteditor/text-editor'
 import {
   ContextBubble,
@@ -39,30 +39,18 @@ import {
   Heading6,
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 import { testContent } from './data'
 import React from 'react'
+import { useEditor } from './context'
 
 type ContentProps = {
   placeholder: string
 }
 
 const Content = ({ placeholder }: ContentProps) => {
-  const [contextBubble, setContextBubble] = useState<{ x: number; y: number } | null>(null)
-  const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
-  const [editorState, setEditorState] = useState({
-    isBold: false,
-    isItalic: false,
-    isUnderline: false,
-    isStrike: false,
-    isCode: false,
-    isHighlight: false,
-    textAlign: 'left' as 'left' | 'center' | 'right' | 'justify',
-    isLink: false,
-    isBulletList: false,
-    isOrderedList: false,
-    isBlockquote: false,
-    headingLevel: 0,
-  })
+  const { state, setContextBubble, setSelectionRect, setBold, setItalic, setUnderline, setStrike, setCode, setHighlight, setTextAlign, setLink, setBulletList, setOrderedList, setBlockquote, setHeadingLevel } = useEditor()
+  const { contextBubble, selectionRect, isBold, isItalic, isUnderline, isStrike, isCode, isHighlight, textAlign, isLink, isBulletList, isOrderedList, isBlockquote, headingLevel } = state
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault()
@@ -93,28 +81,30 @@ const Content = ({ placeholder }: ContentProps) => {
     if (!editor) return
 
     const updateEditorState = () => {
-      setEditorState({
-        isBold: editor.isActive('bold'),
-        isItalic: editor.isActive('italic'),
-        isUnderline: editor.isActive('underline'),
-        isStrike: editor.isActive('strike'),
-        isCode: editor.isActive('code'),
-        isHighlight: editor.isActive('highlight'),
-        textAlign: editor.isActive({ textAlign: 'left' }) ? 'left' :
+      setBold(editor.isActive('bold'))
+      setItalic(editor.isActive('italic'))
+      setUnderline(editor.isActive('underline'))
+      setStrike(editor.isActive('strike'))
+      setCode(editor.isActive('code'))
+      setHighlight(editor.isActive('highlight'))
+      setTextAlign(
+        editor.isActive({ textAlign: 'left' }) ? 'left' :
           editor.isActive({ textAlign: 'center' }) ? 'center' :
             editor.isActive({ textAlign: 'right' }) ? 'right' :
-              editor.isActive({ textAlign: 'justify' }) ? 'justify' : 'left',
-        isLink: editor.isActive('link'),
-        isBulletList: editor.isActive('bulletList'),
-        isOrderedList: editor.isActive('orderedList'),
-        isBlockquote: editor.isActive('blockquote'),
-        headingLevel: editor.isActive('heading', { level: 1 }) ? 1 :
+              editor.isActive({ textAlign: 'justify' }) ? 'justify' : 'left'
+      )
+      setLink(editor.isActive('link'))
+      setBulletList(editor.isActive('bulletList'))
+      setOrderedList(editor.isActive('orderedList'))
+      setBlockquote(editor.isActive('blockquote'))
+      setHeadingLevel(
+        editor.isActive('heading', { level: 1 }) ? 1 :
           editor.isActive('heading', { level: 2 }) ? 2 :
             editor.isActive('heading', { level: 3 }) ? 3 :
               editor.isActive('heading', { level: 4 }) ? 4 :
                 editor.isActive('heading', { level: 5 }) ? 5 :
-                  editor.isActive('heading', { level: 6 }) ? 6 : 0,
-      })
+                  editor.isActive('heading', { level: 6 }) ? 6 : 0
+      )
     }
 
     // Update state on selection changes
@@ -128,27 +118,30 @@ const Content = ({ placeholder }: ContentProps) => {
       editor.off('selectionUpdate', updateEditorState)
       editor.off('update', updateEditorState)
     }
-  }, [])
+  }, [setBold, setItalic, setUnderline, setStrike, setCode, setHighlight, setTextAlign, setLink, setBulletList, setOrderedList, setBlockquote, setHeadingLevel])
 
   return (
     <>
-      <div className="flex flex-1 flex-col">
-        <div className="grid grid-cols-2 gap-4 h-full">
+      <ResizablePanelGroup direction="horizontal" className="h-full">
+        <ResizablePanel defaultSize={70} minSize={20}>
           <TextEditor
             ref={editorRef}
             placeholder={placeholder}
-            className="h-full"
+            className="h-full w-full"
             content={testContent}
             onContextMenu={handleContextMenu}
           />
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={30} minSize={20}>
           <TextEditor
             placeholder={placeholder}
-            className="h-full"
+            className="h-full w-full"
             content={testContent}
             onContextMenu={handleContextMenu}
           />
-        </div>
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
 
       {contextBubble && (
         <ContextBubbleProvider
@@ -164,7 +157,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Bold"
-                variant={editorState.isBold ? "selected" : "default"}
+                variant={isBold ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleBold().run()
                 }}
@@ -173,7 +166,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Italic"
-                variant={editorState.isItalic ? "selected" : "default"}
+                variant={isItalic ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleItalic().run()
                 }}
@@ -182,7 +175,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Underline"
-                variant={editorState.isUnderline ? "selected" : "default"}
+                variant={isUnderline ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleUnderline().run()
                 }}
@@ -191,7 +184,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Strikethrough"
-                variant={editorState.isStrike ? "selected" : "default"}
+                variant={isStrike ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleStrike().run()
                 }}
@@ -201,7 +194,7 @@ const Content = ({ placeholder }: ContentProps) => {
 
               <ContextBubbleButton
                 tooltip="Code"
-                variant={editorState.isCode ? "selected" : "default"}
+                variant={isCode ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleCode().run()
                 }}
@@ -211,7 +204,7 @@ const Content = ({ placeholder }: ContentProps) => {
 
               <ContextBubbleButton
                 tooltip="Highlight"
-                variant={editorState.isHighlight ? "selected" : "default"}
+                variant={isHighlight ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHighlight().run()
                 }}
@@ -228,7 +221,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Align Left"
-                variant={editorState.textAlign === "left" ? "selected" : "default"}
+                variant={textAlign === "left" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("left").run()
                 }}
@@ -237,7 +230,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Align Center"
-                variant={editorState.textAlign === "center" ? "selected" : "default"}
+                variant={textAlign === "center" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("center").run()
                 }}
@@ -246,7 +239,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Align Right"
-                variant={editorState.textAlign === "right" ? "selected" : "default"}
+                variant={textAlign === "right" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("right").run()
                 }}
@@ -255,7 +248,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Justify"
-                variant={editorState.textAlign === "justify" ? "selected" : "default"}
+                variant={textAlign === "justify" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("justify").run()
                 }}
@@ -271,7 +264,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Add Link"
-                variant={editorState.isLink ? "selected" : "default"}
+                variant={isLink ? "selected" : "default"}
                 onClick={() => {
                   const url = window.prompt('Enter URL:', 'https://')
                   if (!url) return
@@ -283,7 +276,7 @@ const Content = ({ placeholder }: ContentProps) => {
 
               <ContextBubbleButton
                 tooltip="Remove Link"
-                variant={editorState.isLink ? "selected" : "default"}
+                variant={isLink ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().unsetLink().run()
                 }}
@@ -299,7 +292,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Bullet List"
-                variant={editorState.isBulletList ? "selected" : "default"}
+                variant={isBulletList ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleBulletList().run()
                 }}
@@ -308,7 +301,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Numbered List"
-                variant={editorState.isOrderedList ? "selected" : "default"}
+                variant={isOrderedList ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleOrderedList().run()
                 }}
@@ -317,7 +310,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Quote"
-                variant={editorState.isBlockquote ? "selected" : "default"}
+                variant={isBlockquote ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleBlockquote().run()
                 }}
@@ -333,7 +326,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Heading 1"
-                variant={editorState.headingLevel === 1 ? "selected" : "default"}
+                variant={headingLevel === 1 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 1 }).run()
                 }}
@@ -342,7 +335,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 2"
-                variant={editorState.headingLevel === 2 ? "selected" : "default"}
+                variant={headingLevel === 2 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 2 }).run()
                 }}
@@ -351,7 +344,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 3"
-                variant={editorState.headingLevel === 3 ? "selected" : "default"}
+                variant={headingLevel === 3 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 3 }).run()
                 }}
@@ -360,7 +353,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 4"
-                variant={editorState.headingLevel === 4 ? "selected" : "default"}
+                variant={headingLevel === 4 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 4 }).run()
                 }}
@@ -369,7 +362,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 5"
-                variant={editorState.headingLevel === 5 ? "selected" : "default"}
+                variant={headingLevel === 5 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 5 }).run()
                 }}
@@ -378,7 +371,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 6"
-                variant={editorState.headingLevel === 6 ? "selected" : "default"}
+                variant={headingLevel === 6 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 6 }).run()
                 }}
@@ -387,7 +380,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Paragraph"
-                variant={editorState.headingLevel === 0 ? "selected" : "default"}
+                variant={headingLevel === 0 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setParagraph().run()
                 }}
@@ -441,96 +434,6 @@ const Content = ({ placeholder }: ContentProps) => {
                 <ChevronRight className="h-4 w-4" />
               </ContextBubbleSubmenuTrigger>
               <ContextBubbleSubmenuContent submenu="sigla">
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
