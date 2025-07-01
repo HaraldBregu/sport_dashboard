@@ -525,5 +525,4 @@ export {
     ContextBubbleSubmenuTrigger,
     ContextBubbleSubmenuContent,
     ContextBubbleSubmenuItem,
-    useContextBubble
 }

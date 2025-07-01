@@ -52,24 +52,15 @@ const Content = ({ placeholder }: ContentProps) => {
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault()
-
-    // Check if there's selected text
     const selection = window.getSelection()
     if (selection && !selection.isCollapsed) {
-      // Text is selected, show context bubble
       const range = selection.getRangeAt(0)
       const rect = range.getBoundingClientRect()
-
-      // Store the selection rect for dynamic positioning
       setSelectionRect(rect)
-
-      // Position bubble initially at a safe location
       const initialX = rect.left + rect.width / 2
       const initialY = rect.top - 10
-
       setContextBubble({ x: initialX, y: initialY })
     }
-    // If no text is selected, don't show the context bubble
   }
 
   const editorRef = useRef<TextEditorRef>(null)
