@@ -227,13 +227,14 @@ function ContextBubble({
 }
 
 const contextBubbleButtonVariants = cva(
-    'flex items-center justify-center h-8 w-8 p-0 transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+    'flex items-center justify-center h-8 w-8 p-0 rounded-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
     {
         variants: {
             variant: {
                 default: 'bg-transparent',
                 ghost: 'bg-transparent hover:bg-accent',
-                outline: 'border border-input bg-background hover:bg-accent'
+                outline: 'border border-input bg-background hover:bg-accent',
+                selected: 'bg-primary text-primary-foreground hover:bg-primary/90 border border-primary'
             },
             size: {
                 sm: 'h-6 w-6',

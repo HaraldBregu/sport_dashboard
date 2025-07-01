@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import TextEditor, { TextEditorRef } from '@/components/texteditor/text-editor'
 import {
   ContextBubble,
@@ -49,11 +49,33 @@ type ContentProps = {
 const Content = ({ placeholder }: ContentProps) => {
   const [contextBubble, setContextBubble] = useState<{ x: number; y: number } | null>(null)
   const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
+  const [editorState, setEditorState] = useState({
+    isBold: false,
+    isItalic: false,
+    isUnderline: false,
+    isStrike: false,
+    isCode: false,
+    isHighlight: false,
+    textAlign: 'left' as 'left' | 'center' | 'right' | 'justify',
+    isLink: false,
+    isBulletList: false,
+    isOrderedList: false,
+    isBlockquote: false,
+    headingLevel: 0,
+  })
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault()
     const selection = window.getSelection()
+
     if (selection && !selection.isCollapsed) {
+      const range = selection.getRangeAt(0)
+      const rect = range.getBoundingClientRect()
+      setSelectionRect(rect)
+      const initialX = rect.left + rect.width / 2
+      const initialY = rect.top - 10
+      setContextBubble({ x: initialX, y: initialY })
+    } else if (selection) {
       const range = selection.getRangeAt(0)
       const rect = range.getBoundingClientRect()
       setSelectionRect(rect)
@@ -64,6 +86,49 @@ const Content = ({ placeholder }: ContentProps) => {
   }
 
   const editorRef = useRef<TextEditorRef>(null)
+
+  // Track editor state changes
+  useEffect(() => {
+    const editor = editorRef.current?.editor
+    if (!editor) return
+
+    const updateEditorState = () => {
+      setEditorState({
+        isBold: editor.isActive('bold'),
+        isItalic: editor.isActive('italic'),
+        isUnderline: editor.isActive('underline'),
+        isStrike: editor.isActive('strike'),
+        isCode: editor.isActive('code'),
+        isHighlight: editor.isActive('highlight'),
+        textAlign: editor.isActive({ textAlign: 'left' }) ? 'left' :
+          editor.isActive({ textAlign: 'center' }) ? 'center' :
+            editor.isActive({ textAlign: 'right' }) ? 'right' :
+              editor.isActive({ textAlign: 'justify' }) ? 'justify' : 'left',
+        isLink: editor.isActive('link'),
+        isBulletList: editor.isActive('bulletList'),
+        isOrderedList: editor.isActive('orderedList'),
+        isBlockquote: editor.isActive('blockquote'),
+        headingLevel: editor.isActive('heading', { level: 1 }) ? 1 :
+          editor.isActive('heading', { level: 2 }) ? 2 :
+            editor.isActive('heading', { level: 3 }) ? 3 :
+              editor.isActive('heading', { level: 4 }) ? 4 :
+                editor.isActive('heading', { level: 5 }) ? 5 :
+                  editor.isActive('heading', { level: 6 }) ? 6 : 0,
+      })
+    }
+
+    // Update state on selection changes
+    editor.on('selectionUpdate', updateEditorState)
+    editor.on('update', updateEditorState)
+
+    // Initial state
+    updateEditorState()
+
+    return () => {
+      editor.off('selectionUpdate', updateEditorState)
+      editor.off('update', updateEditorState)
+    }
+  }, [])
 
   return (
     <>
@@ -99,6 +164,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Bold"
+                variant={editorState.isBold ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleBold().run()
                 }}
@@ -107,6 +173,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Italic"
+                variant={editorState.isItalic ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleItalic().run()
                 }}
@@ -115,6 +182,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Underline"
+                variant={editorState.isUnderline ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleUnderline().run()
                 }}
@@ -123,6 +191,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Strikethrough"
+                variant={editorState.isStrike ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleStrike().run()
                 }}
@@ -132,6 +201,7 @@ const Content = ({ placeholder }: ContentProps) => {
 
               <ContextBubbleButton
                 tooltip="Code"
+                variant={editorState.isCode ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleCode().run()
                 }}
@@ -141,6 +211,7 @@ const Content = ({ placeholder }: ContentProps) => {
 
               <ContextBubbleButton
                 tooltip="Highlight"
+                variant={editorState.isHighlight ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHighlight().run()
                 }}
@@ -157,6 +228,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Align Left"
+                variant={editorState.textAlign === "left" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("left").run()
                 }}
@@ -165,6 +237,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Align Center"
+                variant={editorState.textAlign === "center" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("center").run()
                 }}
@@ -173,6 +246,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Align Right"
+                variant={editorState.textAlign === "right" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("right").run()
                 }}
@@ -181,6 +255,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Justify"
+                variant={editorState.textAlign === "justify" ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setTextAlign("justify").run()
                 }}
@@ -196,6 +271,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Add Link"
+                variant={editorState.isLink ? "selected" : "default"}
                 onClick={() => {
                   const url = window.prompt('Enter URL:', 'https://')
                   if (!url) return
@@ -207,6 +283,7 @@ const Content = ({ placeholder }: ContentProps) => {
 
               <ContextBubbleButton
                 tooltip="Remove Link"
+                variant={editorState.isLink ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().unsetLink().run()
                 }}
@@ -222,6 +299,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Bullet List"
+                variant={editorState.isBulletList ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleBulletList().run()
                 }}
@@ -230,6 +308,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Numbered List"
+                variant={editorState.isOrderedList ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleOrderedList().run()
                 }}
@@ -238,6 +317,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Quote"
+                variant={editorState.isBlockquote ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleBlockquote().run()
                 }}
@@ -253,6 +333,7 @@ const Content = ({ placeholder }: ContentProps) => {
             <ContextBubbleGroup>
               <ContextBubbleButton
                 tooltip="Heading 1"
+                variant={editorState.headingLevel === 1 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 1 }).run()
                 }}
@@ -261,6 +342,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 2"
+                variant={editorState.headingLevel === 2 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 2 }).run()
                 }}
@@ -269,6 +351,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 3"
+                variant={editorState.headingLevel === 3 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 3 }).run()
                 }}
@@ -277,6 +360,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 4"
+                variant={editorState.headingLevel === 4 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 4 }).run()
                 }}
@@ -285,6 +369,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 5"
+                variant={editorState.headingLevel === 5 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 5 }).run()
                 }}
@@ -293,6 +378,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Heading 6"
+                variant={editorState.headingLevel === 6 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().toggleHeading({ level: 6 }).run()
                 }}
@@ -301,6 +387,7 @@ const Content = ({ placeholder }: ContentProps) => {
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Paragraph"
+                variant={editorState.headingLevel === 0 ? "selected" : "default"}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().setParagraph().run()
                 }}
