@@ -1,9 +1,10 @@
-import Content from './Content'
+import Content, { ContentRef } from './Content'
 import Header from './Header'
 import { SidebarLeft } from '@/pages/dashboard/SidebarLeft'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import Footer from './Footer'
 import { EditorProvider } from './context'
+import { useRef } from 'react'
 
 
 const EditorPageProvider = ({ children }: { children: React.ReactNode }) => {
@@ -11,14 +12,22 @@ const EditorPageProvider = ({ children }: { children: React.ReactNode }) => {
 }
 
 const EditorPageContent = () => {
+  const contentRef = useRef<ContentRef>(null)
+
   return (
     <SidebarProvider>
       <SidebarLeft />
       <SidebarInset>
         <div className="flex flex-col h-screen">
-          <Header className="sticky top-0 z-10" />
+          <Header className="sticky top-0 z-10"
+            onSetBold={() => {
+              contentRef.current?.setBold()
+            }}
+          />
           <div className="flex-1 overflow-auto">
-            <Content placeholder="Start writing your content..." />
+            <Content placeholder="Start writing your content..." 
+              ref={contentRef}
+            />
           </div>
           <Footer />
         </div>

@@ -43,10 +43,11 @@ import { useEditor } from './context'
 
 interface HeaderProps {
   className?: string
+  onSetBold: () => void
 }
 
-const Header = ({ className }: HeaderProps) => {
-  const { state, setBold, setItalic, setUnderline, setStrike, setCode, setTextAlign, setLink, setBulletList, setOrderedList, setBlockquote, setHeadingLevel, setFontSize, setFontFamily } = useEditor()
+const Header = ({ className, onSetBold }: HeaderProps) => {
+  const { state, setItalic, setUnderline, setStrike, setCode, setTextAlign, setLink, setBulletList, setOrderedList, setBlockquote, setHeadingLevel, setFontSize, setFontFamily } = useEditor()
   const { isBold, isItalic, isUnderline, isStrike, isCode, textAlign, isLink, isBulletList, isOrderedList, isBlockquote, headingLevel, fontSize, fontFamily } = state
 
   const handleSetPreview = useCallback((value: boolean) => {
@@ -141,7 +142,7 @@ const Header = ({ className }: HeaderProps) => {
           <div className="flex items-center gap-1">
             <TextFormatting
               isBold={isBold}
-              setBold={setBold}
+              setBold={onSetBold}
               isItalic={isItalic}
               setItalic={setItalic}
               isUnderline={isUnderline}
@@ -301,6 +302,7 @@ const FontSizeSelect = memo(({ fontSize, setFontSize }: { fontSize: number, setF
 })
 
 const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline, setUnderline, isStrike, setStrike }: { isBold: boolean, setBold: (isBold: boolean) => void, isItalic: boolean, setItalic: (isItalic: boolean) => void, isUnderline: boolean, setUnderline: (isUnderline: boolean) => void, isStrike: boolean, setStrike: (isStrike: boolean) => void }) => {
+  console.log("TextFormatting rendered")
   return (
     <ToggleGroup type="multiple" size="sm" value={[
       isBold ? 'bold' : '',
@@ -543,7 +545,6 @@ const InsertOptions = memo(({
 })
 
 const ViewOptions = memo(({ isPreview, setPreview }: { isPreview: boolean, setPreview: (isPreview: boolean) => void }) => {
-
   return (
     <>
       <Tooltip>

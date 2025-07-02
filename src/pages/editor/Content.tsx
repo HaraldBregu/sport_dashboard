@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import TextEditor, { TextEditorRef } from '@/components/texteditor/text-editor'
 import {
   ContextBubble,
@@ -44,11 +44,25 @@ import { testContent } from './data'
 import React from 'react'
 import { useEditor } from './context'
 
+export interface ContentRef {
+  setBold: () => void
+}
+
 type ContentProps = {
   placeholder: string
 }
 
-const Content = ({ placeholder }: ContentProps) => {
+const Content = forwardRef<ContentRef, ContentProps>(({ 
+  placeholder 
+}, ref) => {
+
+  useImperativeHandle(ref, () => ({
+    setBold: () => {
+      console.log("setBold from Content")
+      editorRef.current?.editor?.chain().focus().toggleBold().run()
+    }
+  }))
+
   const { state, setContextBubble, setSelectionRect, setBold, setItalic, setUnderline, setStrike, setCode, setHighlight, setTextAlign, setLink, setBulletList, setOrderedList, setBlockquote, setHeadingLevel } = useEditor()
   const { contextBubble, selectionRect, isBold, isItalic, isUnderline, isStrike, isCode, isHighlight, textAlign, isLink, isBulletList, isOrderedList, isBlockquote, headingLevel } = state
 
@@ -492,6 +506,6 @@ const Content = ({ placeholder }: ContentProps) => {
       )}
     </>
   )
-}
+})
 
 export default Content
