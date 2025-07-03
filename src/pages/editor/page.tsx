@@ -28,6 +28,18 @@ const EditorPageContent = () => {
             onSetBold={() => {
               contentRef.current?.setBold()
             }}
+            onSetImage={() => {
+              contentRef.current?.setImage()
+            }}
+            onSetComment={() => {
+              contentRef.current?.setComment()
+            }}
+            onSetBookmark={() => {
+              contentRef.current?.setBookmark()
+            }}
+            onSetHorizontalRule={() => {
+              contentRef.current?.setHorizontalRule()
+            }}
           />
           <div className="flex-1 overflow-hidden">
             <Content

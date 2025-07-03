@@ -13,6 +13,9 @@ import CodeBlock from '@tiptap/extension-code-block';
 import Paragraph from '@tiptap/extension-paragraph';
 import Heading from '@tiptap/extension-heading';
 import TextStyleExtended from './extensions/textstyle-extension';
+import { CommentMark } from './marks/comment-mark';
+import BookmarkMark from './marks/bookmark-mark';
+import HorizontalRule from '@tiptap/extension-horizontal-rule'
 
 export interface TextEditorRef {
     editor: Editor | null;
@@ -93,6 +96,17 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
                     class: 'mb-2',
                 },
             }),
+            HorizontalRule,
+            CommentMark.configure({
+                HTMLAttributes: {
+                    class: 'comment-mark',
+                },
+            }),
+            BookmarkMark.configure({
+                HTMLAttributes: {
+                    class: 'bookmark-mark',
+                },
+            }),
         ],
         editorProps: {
             attributes: {
@@ -114,8 +128,8 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(({
         editable,
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
-            // const json = editor.getJSON();
-            // console.log(JSON.stringify(json, null, 2))
+            const json = editor.getJSON();
+            console.log(JSON.stringify(json))
             onChange?.(html);
         },
     });

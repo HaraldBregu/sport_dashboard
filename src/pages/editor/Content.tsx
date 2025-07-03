@@ -46,6 +46,10 @@ import { useEditor } from './context'
 
 export interface ContentRef {
   setBold: () => void
+  setImage: () => void
+  setComment: () => void
+  setBookmark: () => void
+  setHorizontalRule: () => void
 }
 
 type ContentProps = {
@@ -58,8 +62,48 @@ const Content = forwardRef<ContentRef, ContentProps>(({
 
   useImperativeHandle(ref, () => ({
     setBold: () => {
-      console.log("setBold from Content")
       editorRef.current?.editor?.chain().focus().toggleBold().run()
+    },
+    setImage: () => {
+      const url = window.prompt('URL')
+      if (url) {
+        editorRef.current?.editor?.chain().focus().setImage({
+          src: url,
+          title: 'Image example',
+          alt: 'Image example',
+        }).run()
+      }
+    },
+    setComment: () => {
+      const editor = editorRef.current?.editor;
+      if (!editor) return;
+      const { from, to } = editor.state.selection;
+
+      if (from === to) {
+        alert('Please select some text to add a comment');
+        return;
+      }
+
+      editor.commands.setComment({
+        comment: "this is a text",
+        author: "John Doe",
+        date: new Date().toISOString(),
+      });
+    },
+    setBookmark: () => {
+      const editor = editorRef.current?.editor;
+      if (!editor) return;
+      editor.commands.setBookmark({
+        bookmark: "this is a bookmark",
+        author: "John Doe",
+        date: new Date().toISOString(),
+        color: "blue",
+      });
+    },
+    setHorizontalRule: () => {
+      const editor = editorRef.current?.editor;
+      if (!editor) return;
+      editor.commands.setHorizontalRule();
     }
   }))
 
@@ -157,7 +201,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({
             <TextEditor
               placeholder={placeholder}
               className="h-full w-full"
-              content={testContent}
+              
               onContextMenu={handleContextMenu}
             />
             <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />

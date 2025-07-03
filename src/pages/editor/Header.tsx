@@ -36,7 +36,10 @@ import {
   Table,
   Eye,
   Settings,
-  MoreHorizontal
+  MoreHorizontal,
+  MessageCirclePlus,
+  Bookmark,
+  Minus
 } from 'lucide-react'
 import { memo, useCallback } from 'react'
 import { useEditor } from './context'
@@ -44,9 +47,13 @@ import { useEditor } from './context'
 interface HeaderProps {
   className?: string
   onSetBold: () => void
+  onSetImage: () => void
+  onSetComment: () => void
+  onSetBookmark: () => void
+  onSetHorizontalRule: () => void
 }
 
-const Header = ({ className, onSetBold }: HeaderProps) => {
+const Header = ({ className, onSetBold, onSetImage, onSetComment, onSetBookmark, onSetHorizontalRule }: HeaderProps) => {
   const { state, setItalic, setUnderline, setStrike, setCode, setTextAlign, setLink, setBulletList, setOrderedList, setBlockquote, setHeadingLevel, setFontSize, setFontFamily } = useEditor()
   const { isBold, isItalic, isUnderline, isStrike, isCode, textAlign, isLink, isBulletList, isOrderedList, isBlockquote, headingLevel, fontSize, fontFamily } = state
 
@@ -54,15 +61,25 @@ const Header = ({ className, onSetBold }: HeaderProps) => {
     console.log(value)
   }, [])
 
-  const handleSetImage = useCallback((value: boolean) => {
-    console.log(value)
-  }, [])
+  const handleSetImage = useCallback(() => {
+    onSetImage()
+  }, [onSetImage])
 
   const handleSetTable = useCallback((value: boolean) => {
     console.log(value)
   }, [])
 
-  console.log("Header rendered")
+  const handleSetComment = useCallback(() => {
+    onSetComment()
+  }, [onSetComment])
+
+  const handleSetBookmark = useCallback(() => {
+    onSetBookmark()
+  }, [onSetBookmark])
+
+  const handleSetHorizontalRule = useCallback(() => {
+    onSetHorizontalRule()
+  }, [onSetHorizontalRule])
 
   return (
     <header
@@ -186,6 +203,9 @@ const Header = ({ className, onSetBold }: HeaderProps) => {
               setImage={handleSetImage}
               isTable={false}
               setTable={handleSetTable}
+              setComment={handleSetComment}
+              setBookmark={handleSetBookmark}
+              setHorizontalRule={handleSetHorizontalRule}
             />
             <SeparatorMemo />
           </div>
@@ -506,48 +526,89 @@ const InsertOptions = memo(({
   setLink,
   isImage,
   setImage,
-  isTable, setTable
-}: { isLink: boolean, setLink: (isLink: boolean) => void, isImage: boolean, setImage: (isImage: boolean) => void, isTable: boolean, setTable: (isTable: boolean) => void }) => {
+  isTable,
+  setTable,
+  setComment,
+  setBookmark,
+  setHorizontalRule,
+}: {
+  isLink: boolean,
+  setLink: (isLink: boolean) => void,
+  isImage: boolean,
+  setImage: (isImage: boolean) => void,
+  isTable: boolean,
+  setTable: (isTable: boolean) => void,
+  setComment: () => void,
+  setBookmark: () => void,
+  setHorizontalRule: () => void
+}) => (
+  <>
+    <TooltipMemo>
+      <TooltipTriggerMemo asChild>
+        <Button
+          variant={isLink ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setLink(!isLink)}
+        >
+          <Link className="h-4 w-4" />
+        </Button>
+      </TooltipTriggerMemo>
+      <TooltipContentMemo>Insert Link</TooltipContentMemo>
+    </TooltipMemo>
 
-  return (
-    <>
-      <TooltipMemo  >
-        <TooltipTriggerMemo asChild>
-          <Button
-            variant={isLink ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setLink(!isLink)}
-          >
-            <Link className="h-4 w-4" />
-          </Button>
-        </TooltipTriggerMemo>
-        <TooltipContentMemo>Insert Link</TooltipContentMemo>
-      </TooltipMemo>
+    <TooltipMemo>
+      <TooltipTriggerMemo asChild>
+        <Button
+          variant={isImage ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setImage(!isImage)}>
+          <Image className="h-4 w-4" />
+        </Button>
+      </TooltipTriggerMemo>
+      <TooltipContentMemo>Insert Image</TooltipContentMemo>
+    </TooltipMemo>
 
-      <TooltipMemo>
-        <TooltipTriggerMemo asChild>
-          <Button
-            variant={isImage ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setImage(!isImage)}>
-            <Image className="h-4 w-4" />
-          </Button>
-        </TooltipTriggerMemo>
-        <TooltipContentMemo>Insert Image</TooltipContentMemo>
-      </TooltipMemo>
+    <TooltipMemo>
+      <TooltipTriggerMemo asChild>
+        <Button variant={isTable ? "default" : "ghost"} size="sm" onClick={() => setTable(!isTable)}>
+          <Table className="h-4 w-4" />
+        </Button>
+      </TooltipTriggerMemo>
+      <TooltipContentMemo>Insert Table</TooltipContentMemo>
+    </TooltipMemo>
 
-      <TooltipMemo>
-        <TooltipTriggerMemo asChild>
-          <Button variant={isTable ? "default" : "ghost"} size="sm" onClick={() => setTable(!isTable)}>
-            <Table className="h-4 w-4" />
-          </Button>
-        </TooltipTriggerMemo>
-        <TooltipContentMemo>Insert Table</TooltipContentMemo>
-      </TooltipMemo>
+    <TooltipMemo>
+      <TooltipTriggerMemo asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={setComment}>
+          <MessageCirclePlus className="h-4 w-4" />
+        </Button>
+      </TooltipTriggerMemo>
+      <TooltipContentMemo>Insert Comment</TooltipContentMemo>
+    </TooltipMemo>
 
-    </>
-  )
-})
+    <TooltipMemo>
+      <TooltipTriggerMemo asChild>
+        <Button variant="ghost" size="sm" onClick={setBookmark}>
+          <Bookmark className="h-4 w-4" />
+        </Button>
+      </TooltipTriggerMemo>
+      <TooltipContentMemo>Insert Bookmark</TooltipContentMemo>
+    </TooltipMemo>
+
+    <TooltipMemo>
+      <TooltipTriggerMemo asChild>
+        <Button variant="ghost" size="sm" onClick={setHorizontalRule}>
+          <Minus className="h-4 w-4" />
+        </Button>
+      </TooltipTriggerMemo>
+      <TooltipContentMemo>Insert Horizontal Rule</TooltipContentMemo>
+    </TooltipMemo>
+
+  </>
+))
 
 const ViewOptions = memo(({ isPreview, setPreview }: { isPreview: boolean, setPreview: (isPreview: boolean) => void }) => {
   return (

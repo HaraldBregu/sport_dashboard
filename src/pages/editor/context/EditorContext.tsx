@@ -1,5 +1,5 @@
 import React, { useReducer, ReactNode, useCallback } from 'react'
-import { createContext, useContextSelector } from 'use-context-selector'
+import { createContext } from 'use-context-selector'
 import { EditorState, EditorAction } from './types'
 
 // Initial state
