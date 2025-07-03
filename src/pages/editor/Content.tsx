@@ -52,8 +52,8 @@ type ContentProps = {
   placeholder: string
 }
 
-const Content = forwardRef<ContentRef, ContentProps>(({ 
-  placeholder 
+const Content = forwardRef<ContentRef, ContentProps>(({
+  placeholder
 }, ref) => {
 
   useImperativeHandle(ref, () => ({
@@ -136,27 +136,29 @@ const Content = forwardRef<ContentRef, ContentProps>(({
 
   return (
     <>
-      <ResizablePanelGroupMemo direction="horizontal" className="h-full w-full">
-        <ResizablePanelMemo defaultSize={70} minSize={20}>
-          <div className="h-full w-full overflow-hidden">
-          <TextEditor
-            ref={editorRef}
-            placeholder={placeholder}
+      <ResizablePanelGroupMemo direction="horizontal" className="h-full">
+        <ResizablePanelMemo minSize={40}>
+          <div className="h-full w-full overflow-hidden relative">
+            <div className="h-10 w-full absolute top-0 z-10 bg-gradient-to-t from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
+            <TextEditor
+              ref={editorRef}
+              placeholder={placeholder}
               className="h-full w-full"
-            content={testContent}
-            onContextMenu={handleContextMenu}
-          />
+              content={testContent}
+              onContextMenu={handleContextMenu}
+            />
           </div>
         </ResizablePanelMemo>
         <ResizableHandleMemo withHandle />
-        <ResizablePanelMemo defaultSize={30} minSize={30}>
-          <div className="h-full w-full overflow-hidden">
-          <TextEditor
-            placeholder={placeholder}
+        <ResizablePanelMemo minSize={30}>
+          <div className="h-full w-full overflow-hidden relative">
+            <div className="h-10 w-full absolute top-0 z-10 bg-gradient-to-t from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
+            <TextEditor
+              placeholder={placeholder}
               className="h-full w-full"
-            content={testContent}
-            onContextMenu={handleContextMenu}
-          />
+              content={testContent}
+              onContextMenu={handleContextMenu}
+            />
           </div>
         </ResizablePanelMemo>
       </ResizablePanelGroupMemo>
