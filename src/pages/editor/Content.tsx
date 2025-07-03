@@ -147,6 +147,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({
               content={testContent}
               onContextMenu={handleContextMenu}
             />
+            <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
           </div>
         </ResizablePanelMemo>
         <ResizableHandleMemo withHandle />
@@ -159,6 +160,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({
               content={testContent}
               onContextMenu={handleContextMenu}
             />
+            <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
           </div>
         </ResizablePanelMemo>
       </ResizablePanelGroupMemo>
