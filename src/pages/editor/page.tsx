@@ -8,24 +8,30 @@ import { useRef } from 'react'
 
 
 const EditorPageProvider = ({ children }: { children: React.ReactNode }) => {
-  return <EditorProvider>{children}</EditorProvider>
+  return (
+    <EditorProvider>
+      {children}
+    </EditorProvider>
+  )
 }
 
 const EditorPageContent = () => {
   const contentRef = useRef<ContentRef>(null)
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <SidebarLeft />
       <SidebarInset>
         <div className="flex flex-col h-screen">
-          <Header className="sticky top-0 z-10"
+          <Header
+            className="sticky top-0 z-10"
             onSetBold={() => {
               contentRef.current?.setBold()
             }}
           />
-          <div className="flex-1 overflow-auto">
-            <Content placeholder="Start writing your content..." 
+          <div className="flex-1 overflow-hidden">
+            <Content
+              placeholder="Start writing your content..."
               ref={contentRef}
             />
           </div>
@@ -37,8 +43,6 @@ const EditorPageContent = () => {
 }
 
 export default function EditorPage() {
-  console.log('EditorPage')
-
   return (
     <>
       <EditorPageProvider>

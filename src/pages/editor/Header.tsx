@@ -70,12 +70,12 @@ const Header = ({ className, onSetBold }: HeaderProps) => {
     >
       {/* Top section with breadcrumb */}
       <div className="flex h-14 items-center gap-2 px-3">
-        <SidebarTrigger />
+        <SidebarTriggerMemo />
         <BreadcrumbMemo />
       </div>
 
       {/* Bottom section with toolbar */}
-      <TooltipProvider>
+      <TooltipProviderMemo>
         <div className={cn('bg-background dark:bg-background flex items-center gap-1 px-3 py-2', className)}>
           {/* File Operations */}
           {/* <div className="flex items-center gap-1">
@@ -205,7 +205,7 @@ const Header = ({ className, onSetBold }: HeaderProps) => {
           </div>
 
         </div>
-      </TooltipProvider>
+      </TooltipProviderMemo>
     </header>
   )
 }
@@ -214,10 +214,15 @@ Header.displayName = 'Header'
 
 export default memo(Header)
 
+const SidebarTriggerMemo = memo(({ ...props }: React.ComponentProps<typeof SidebarTrigger>) => {
+  return (
+    <SidebarTrigger {...props} />
+  )
+})
 
 const HeadingLevelSelect = memo(({ headingLevel, setHeadingLevel }: { headingLevel: 0 | 1 | 2 | 3 | 4 | 5 | 6, setHeadingLevel: (headingLevel: 0 | 1 | 2 | 3 | 4 | 5 | 6) => void }) => {
   return (
-    <Tooltip>
+    <TooltipMemo>
       <Select value={headingLevel === 0 ? "body" : `h${headingLevel}`} onValueChange={(value) => {
         if (value === "body") {
           setHeadingLevel(0)
@@ -225,11 +230,11 @@ const HeadingLevelSelect = memo(({ headingLevel, setHeadingLevel }: { headingLev
           setHeadingLevel(parseInt(value.slice(1)) as 1 | 2 | 3 | 4 | 5 | 6)
         }
       }}>
-        <TooltipTrigger asChild>
+        <TooltipTriggerMemo asChild>
           <SelectTrigger className="w-[120px] h-8">
             <SelectValue placeholder="Text style" />
           </SelectTrigger>
-        </TooltipTrigger>
+        </TooltipTriggerMemo>
         <SelectContent>
           <SelectItem value="h1">Heading 1</SelectItem>
           <SelectItem value="h2">Heading 2</SelectItem>
@@ -240,20 +245,20 @@ const HeadingLevelSelect = memo(({ headingLevel, setHeadingLevel }: { headingLev
           <SelectItem value="body">Body Text</SelectItem>
         </SelectContent>
       </Select>
-      <TooltipContent>Text Style</TooltipContent>
-    </Tooltip>
+      <TooltipContentMemo>Text Style</TooltipContentMemo>
+    </TooltipMemo>
   )
 })
 
 const FontFamilySelect = memo(({ fontFamily, setFontFamily }: { fontFamily: string, setFontFamily: (fontFamily: string) => void }) => {
   return (
-    <Tooltip>
+    <TooltipMemo>
       <Select value={fontFamily} onValueChange={setFontFamily}>
-        <TooltipTrigger asChild>
+        <TooltipTriggerMemo asChild>
           <SelectTrigger className="w-[120px] h-8">
             <SelectValue placeholder="Font" />
           </SelectTrigger>
-        </TooltipTrigger>
+        </TooltipTriggerMemo>
         <SelectContent>
           <SelectItem value="inter">Inter</SelectItem>
           <SelectItem value="arial">Arial</SelectItem>
@@ -265,20 +270,20 @@ const FontFamilySelect = memo(({ fontFamily, setFontFamily }: { fontFamily: stri
           <SelectItem value="monaco">Monaco</SelectItem>
         </SelectContent>
       </Select>
-      <TooltipContent>Font Family</TooltipContent>
-    </Tooltip>
+      <TooltipContentMemo>Font Family</TooltipContentMemo>
+    </TooltipMemo>
   )
 })
 
 const FontSizeSelect = memo(({ fontSize, setFontSize }: { fontSize: number, setFontSize: (fontSize: number) => void }) => {
   return (
-    <Tooltip>
+    <TooltipMemo>
       <Select value={fontSize.toString()} onValueChange={(value) => setFontSize(parseInt(value))}>
-        <TooltipTrigger asChild>
+        <TooltipTriggerMemo asChild>
           <SelectTrigger className="w-[80px] h-8">
             <SelectValue placeholder="Size" />
           </SelectTrigger>
-        </TooltipTrigger>
+        </TooltipTriggerMemo  >
         <SelectContent>
           <SelectItem value="8">8px</SelectItem>
           <SelectItem value="10">10px</SelectItem>
@@ -296,8 +301,8 @@ const FontSizeSelect = memo(({ fontSize, setFontSize }: { fontSize: number, setF
           <SelectItem value="72">72px</SelectItem>
         </SelectContent>
       </Select>
-      <TooltipContent>Font Size</TooltipContent>
-    </Tooltip>
+      <TooltipContentMemo>Font Size</TooltipContentMemo>
+    </TooltipMemo>
   )
 })
 
@@ -310,8 +315,8 @@ const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline
       isUnderline ? 'underline' : '',
       isStrike ? 'strikethrough' : ''
     ].filter(Boolean)}>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="bold"
             variant={isBold ? 'default' : 'outline'}
@@ -320,12 +325,12 @@ const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline
           >
             <Bold className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Bold (Ctrl+B)</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Bold (Ctrl+B)</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="italic"
             variant={isItalic ? 'default' : 'outline'}
@@ -334,12 +339,12 @@ const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline
           >
             <Italic className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Italic (Ctrl+I)</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Italic (Ctrl+I)</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="underline"
             variant={isUnderline ? 'default' : 'outline'}
@@ -348,12 +353,12 @@ const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline
           >
             <Underline className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Underline (Ctrl+U)</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Underline (Ctrl+U)</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="strikethrough"
             variant={isStrike ? 'default' : 'outline'}
@@ -362,9 +367,9 @@ const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline
           >
             <Strikethrough className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Strikethrough</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Strikethrough</TooltipContentMemo>
+      </TooltipMemo>
     </ToggleGroup>
   )
 })
@@ -372,8 +377,8 @@ const TextFormatting = memo(({ isBold, setBold, isItalic, setItalic, isUnderline
 const TextAlignment = memo(({ textAlign, setTextAlign }: { textAlign: 'left' | 'center' | 'right' | 'justify', setTextAlign: (textAlign: 'left' | 'center' | 'right' | 'justify') => void }) => {
   return (
     <ToggleGroup type="single" size="sm" value={textAlign}>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="left"
             aria-label="Align left"
@@ -381,12 +386,12 @@ const TextAlignment = memo(({ textAlign, setTextAlign }: { textAlign: 'left' | '
           >
             <AlignLeft className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Align Left</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Align Left</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="center"
             aria-label="Align center"
@@ -394,12 +399,12 @@ const TextAlignment = memo(({ textAlign, setTextAlign }: { textAlign: 'left' | '
           >
             <AlignCenter className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Align Center</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Align Center</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="right"
             aria-label="Align right"
@@ -407,12 +412,12 @@ const TextAlignment = memo(({ textAlign, setTextAlign }: { textAlign: 'left' | '
           >
             <AlignRight className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Align Right</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Align Right</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <ToggleGroupItem
             value="justify"
             aria-label="Align justify"
@@ -420,9 +425,9 @@ const TextAlignment = memo(({ textAlign, setTextAlign }: { textAlign: 'left' | '
           >
             <AlignJustify className="h-4 w-4" />
           </ToggleGroupItem>
-        </TooltipTrigger>
-        <TooltipContent>Justify</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Justify</TooltipContentMemo>
+      </TooltipMemo>
     </ToggleGroup>
   )
 })
@@ -440,8 +445,8 @@ const ListFormatting = memo(({
 
   return (
     <>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button
             variant={isBulletList ? "default" : "ghost"}
             size="sm"
@@ -449,12 +454,12 @@ const ListFormatting = memo(({
           >
             <List className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Bullet List</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Bullet List</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button
             variant={isOrderedList ? "default" : "ghost"}
             size="sm"
@@ -462,12 +467,12 @@ const ListFormatting = memo(({
           >
             <ListOrdered className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Numbered List</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Numbered List</TooltipContentMemo >
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button
             variant={isBlockquote ? "default" : "ghost"}
             size="sm"
@@ -475,12 +480,12 @@ const ListFormatting = memo(({
           >
             <Quote className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Blockquote</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo  >
+        <TooltipContentMemo>Blockquote</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button
             variant={isCode ? "default" : "ghost"}
             size="sm"
@@ -488,9 +493,9 @@ const ListFormatting = memo(({
           >
             <Code className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Code Block</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Code Block</TooltipContentMemo>
+      </TooltipMemo>
 
     </>
   )
@@ -506,8 +511,8 @@ const InsertOptions = memo(({
 
   return (
     <>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo  >
+        <TooltipTriggerMemo asChild>
           <Button
             variant={isLink ? "default" : "ghost"}
             size="sm"
@@ -515,30 +520,30 @@ const InsertOptions = memo(({
           >
             <Link className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Insert Link</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Insert Link</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button
             variant={isImage ? "default" : "ghost"}
             size="sm"
             onClick={() => setImage(!isImage)}>
             <Image className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Insert Image</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Insert Image</TooltipContentMemo>
+      </TooltipMemo>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button variant={isTable ? "default" : "ghost"} size="sm" onClick={() => setTable(!isTable)}>
             <Table className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Insert Table</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Insert Table</TooltipContentMemo>
+      </TooltipMemo>
 
     </>
   )
@@ -547,16 +552,16 @@ const InsertOptions = memo(({
 const ViewOptions = memo(({ isPreview, setPreview }: { isPreview: boolean, setPreview: (isPreview: boolean) => void }) => {
   return (
     <>
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button variant={isPreview ? "default" : "ghost"}
             size="sm"
             onClick={() => setPreview(!isPreview)}>
             <Eye className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Preview</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Preview</TooltipContentMemo>
+      </TooltipMemo>
     </>
   )
 })
@@ -568,14 +573,14 @@ const StatusSettings = memo(() => {
         Auto-saved
       </Badge>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
+      <TooltipMemo>
+        <TooltipTriggerMemo asChild>
           <Button variant="ghost" size="sm">
             <Settings className="h-4 w-4" />
           </Button>
-        </TooltipTrigger>
-        <TooltipContent>Editor Settings</TooltipContent>
-      </Tooltip>
+        </TooltipTriggerMemo>
+        <TooltipContentMemo>Editor Settings</TooltipContentMemo >
+      </TooltipMemo>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -609,5 +614,29 @@ const BreadcrumbMemo = memo(() => {
 const SeparatorMemo = memo(() => {
   return (
     <Separator orientation="vertical" className="h-6" />
+  )
+})
+
+const TooltipProviderMemo = memo(({ ...props }: React.ComponentProps<typeof TooltipProvider>) => {
+  return (
+    <TooltipProvider {...props} />
+  )
+})
+
+const TooltipMemo = memo(({ ...props }: React.ComponentProps<typeof Tooltip>) => {
+  return (
+    <Tooltip {...props} />
+  )
+})
+
+const TooltipContentMemo = memo(({ ...props }: React.ComponentProps<typeof TooltipContent>) => {
+  return (
+    <TooltipContent {...props} />
+  )
+})
+
+const TooltipTriggerMemo = memo(({ ...props }: React.ComponentProps<typeof TooltipTrigger>) => {
+  return (
+    <TooltipTrigger {...props} />
   )
 })

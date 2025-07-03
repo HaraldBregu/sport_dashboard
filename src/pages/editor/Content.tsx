@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { useRef, useEffect, forwardRef, useImperativeHandle, memo } from 'react'
 import TextEditor, { TextEditorRef } from '@/components/texteditor/text-editor'
 import {
   ContextBubble,
@@ -136,26 +136,30 @@ const Content = forwardRef<ContentRef, ContentProps>(({
 
   return (
     <>
-      <ResizablePanelGroup direction="horizontal" className="h-full">
-        <ResizablePanel defaultSize={70} minSize={20}>
+      <ResizablePanelGroupMemo direction="horizontal" className="h-full w-full">
+        <ResizablePanelMemo defaultSize={70} minSize={20}>
+          <div className="h-full w-full overflow-hidden">
           <TextEditor
             ref={editorRef}
             placeholder={placeholder}
-            className="h-full w-full"
+              className="h-full w-full"
             content={testContent}
             onContextMenu={handleContextMenu}
           />
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={30} minSize={20}>
+          </div>
+        </ResizablePanelMemo>
+        <ResizableHandleMemo withHandle />
+        <ResizablePanelMemo defaultSize={30} minSize={30}>
+          <div className="h-full w-full overflow-hidden">
           <TextEditor
             placeholder={placeholder}
-            className="h-full w-full"
+              className="h-full w-full"
             content={testContent}
             onContextMenu={handleContextMenu}
           />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+          </div>
+        </ResizablePanelMemo>
+      </ResizablePanelGroupMemo>
 
       {contextBubble && (
         <ContextBubbleProvider
@@ -508,4 +512,22 @@ const Content = forwardRef<ContentRef, ContentProps>(({
   )
 })
 
-export default Content
+export default memo(Content)
+
+const ResizableHandleMemo = memo(({ ...props }: React.ComponentProps<typeof ResizableHandle>) => {
+  return (
+    <ResizableHandle {...props} />
+  )
+})
+
+const ResizablePanelGroupMemo = memo(({ ...props }: React.ComponentProps<typeof ResizablePanelGroup>) => {
+  return (
+    <ResizablePanelGroup {...props} />
+  )
+})
+
+const ResizablePanelMemo = memo(({ ...props }: React.ComponentProps<typeof ResizablePanel>) => {
+  return (
+    <ResizablePanel {...props} />
+  )
+})
