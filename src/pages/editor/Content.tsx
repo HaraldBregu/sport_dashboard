@@ -40,7 +40,7 @@ import {
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
-import { testContent } from './data'
+import { testContent, testContent2 } from './data'
 import React from 'react'
 import { useEditor } from './context'
 
@@ -87,7 +87,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({
       editor.commands.setComment({
         comment: "this is a text",
         author: "John Doe",
-        date: new Date().toISOString(),
+        commentId: new Date().toISOString(),
       });
     },
     setBookmark: () => {
@@ -201,7 +201,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({
             <TextEditor
               placeholder={placeholder}
               className="h-full w-full"
-              
+              content={testContent2}
               onContextMenu={handleContextMenu}
             />
             <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />

@@ -10,7 +10,7 @@ declare module '@tiptap/core' {
             /**
              * Set a comment mark
              */
-            setComment: (attributes?: { comment?: string; author?: string; date?: string }) => ReturnType;
+            setComment: (attributes?: { comment?: string; author?: string; commentId?: string }) => ReturnType;
             /**
              * Unset a comment mark
              */
@@ -18,12 +18,12 @@ declare module '@tiptap/core' {
             /**
              * Toggle a comment mark
              */
-            toggleComment: (attributes?: { comment?: string; author?: string; date?: string }) => ReturnType;
+            toggleComment: (attributes?: { comment?: string; author?: string; commentId?: string }) => ReturnType;
         };
     }
 }
 
-export const CommentMark = Mark.create<CommentOptions>({
+const CommentMark = Mark.create<CommentOptions>({
     name: 'CommentMark',
 
     addOptions() {
@@ -58,15 +58,15 @@ export const CommentMark = Mark.create<CommentOptions>({
                     };
                 },
             },
-            date: {
+            commentId: {
                 default: null,
-                parseHTML: element => element.getAttribute('data-date'),
+                parseHTML: element => element.getAttribute('data-comment-id'),
                 renderHTML: attributes => {
-                    if (!attributes.date) {
+                    if (!attributes.commentId) {
                         return {};
                     }
                     return {
-                        'data-date': attributes.date,
+                        'data-comment-id': attributes.commentId,
                     };
                 },
             },
@@ -113,4 +113,4 @@ export const CommentMark = Mark.create<CommentOptions>({
     },
 });
 
-export default Comment; 
+export default CommentMark; 

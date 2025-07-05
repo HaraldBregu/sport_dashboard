@@ -13,7 +13,7 @@ import CodeBlock from '@tiptap/extension-code-block';
 import Paragraph from '@tiptap/extension-paragraph';
 import Heading from '@tiptap/extension-heading';
 import TextStyleExtended from './extensions/textstyle-extension';
-import { CommentMark } from './marks/comment-mark';
+import CommentMark from './marks/comment-mark';
 import BookmarkMark from './marks/bookmark-mark';
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
 

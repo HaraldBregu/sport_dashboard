@@ -20,7 +20,7 @@ const CommentExample: React.FC = () => {
         editor.commands.setComment({
             comment: commentText,
             author: author,
-            date: new Date().toISOString(),
+            commentId: new Date().toISOString(),
         });
         
         setCommentText('');
@@ -47,7 +47,7 @@ const CommentExample: React.FC = () => {
         editor.commands.toggleComment({
             comment: commentText,
             author: author,
-            date: new Date().toISOString(),
+            commentId: new Date().toISOString(),
         });
     };
 
@@ -105,7 +105,7 @@ const CommentExample: React.FC = () => {
             <div className="border border-gray-300 rounded-md">
                 <TextEditor
                     ref={editorRef}
-                    content="<p>Select some text and use the buttons above to add, remove, or toggle comments. Comments will appear with a yellow background.</p>"
+                    content="<p>Select some text and use the buttons above to add, remove, or toggle comments. Comments will appear with a yellow background. You can also add comments inside existing comments to create nested comments!</p>"
                     placeholder="Start typing..."
                     className="min-h-[300px]"
                 />
@@ -119,6 +119,7 @@ const CommentExample: React.FC = () => {
                     <li>Click "Set Comment" to add a comment mark</li>
                     <li>Click "Unset Comment" to remove comment marks from selected text</li>
                     <li>Click "Toggle Comment" to add/remove comment marks</li>
+                    <li><strong>Nested Comments:</strong> You can add comments inside existing comments - they will be visually distinct with a darker background</li>
                 </ul>
             </div>
         </div>
