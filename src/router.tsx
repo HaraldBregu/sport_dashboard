@@ -5,15 +5,30 @@ import FastContextPage from './pages/fast-context/page'
 import DefaultContextPage from './pages/default-context/page'
 import FastContextGenericPage from './pages/fast-context-generic/page'
 import FastContextGenericExtendedPageExtended from './pages/fast-context-generic-extended/page'
+import DashboardPage from './pages/dashboard/page'
+import AichatPage from './pages/aichat/page'
+import SitemapPage from './pages/sitemap/page'
 
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <SitemapPage />
+  },
+  {
+    path: "editor",
     element: <EditorPage />
   },
   {
     path: '/demo',
     element: <DemoPage />
+  },
+  {
+    path: '/dashboard',
+    element: <DashboardPage />
+  },
+  {
+    path: '/aichat',
+    element: <AichatPage />
   },
   {
     path: '/default-context',
