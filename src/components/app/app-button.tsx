@@ -3,7 +3,6 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-// Extended button variants with custom app-specific styles
 const appButtonVariants = cva(
   buttonVariants(),
   {
@@ -96,4 +95,4 @@ const AppButton = React.forwardRef<HTMLButtonElement, AppButtonProps>(
 
 AppButton.displayName = 'AppButton'
 
-export { AppButton, appButtonVariants }
+export { AppButton }
