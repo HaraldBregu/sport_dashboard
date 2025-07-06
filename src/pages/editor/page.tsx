@@ -6,13 +6,8 @@ import Footer from './Footer'
 import { EditorProvider } from './context'
 import { useRef } from 'react'
 
-
 const EditorPageProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <EditorProvider>
-      {children}
-    </EditorProvider>
-  )
+  return <EditorProvider>{children}</EditorProvider>
 }
 
 const EditorPageContent = () => {
@@ -42,10 +37,7 @@ const EditorPageContent = () => {
             }}
           />
           <div className="flex-1 overflow-hidden">
-            <Content
-              placeholder="Start writing your content..."
-              ref={contentRef}
-            />
+            <Content placeholder="Start writing your content..." ref={contentRef} />
           </div>
           <Footer />
         </div>
@@ -65,5 +57,3 @@ export default function EditorPage() {
 }
 
 EditorPage.displayName = 'EditorPage'
-
-

@@ -6,15 +6,9 @@ export interface SvgIconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 const SvgIcon = React.forwardRef<SVGSVGElement, SvgIconProps>(
-  ({ children, viewBox = "0 0 24 24", ...props }, ref) => {
+  ({ children, viewBox = '0 0 24 24', ...props }, ref) => {
     return (
-      <svg
-        ref={ref}
-        viewBox={viewBox}
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
-      >
+      <svg ref={ref} viewBox={viewBox} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         {children}
       </svg>
     )
@@ -23,4 +17,4 @@ const SvgIcon = React.forwardRef<SVGSVGElement, SvgIconProps>(
 
 SvgIcon.displayName = 'SvgIcon'
 
-export default SvgIcon 
+export default SvgIcon

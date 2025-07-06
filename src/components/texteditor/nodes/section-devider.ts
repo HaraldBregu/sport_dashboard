@@ -3,7 +3,6 @@
 // import { EditorView } from 'prosemirror-view';
 // import { Node as ProseMirrorNode } from 'prosemirror-model';
 
-
 // const SectionDivider = Node.create({
 //     name: 'sectionDivider',
 //     group: 'block',
@@ -120,8 +119,6 @@
 //                             // If no sectionDividers in selection, allow normal deletion
 //                             return false;
 //                         }
-
-
 
 //                         // Gestione della cancellazione con cursore (senza selezione)
 //                         if (event.key === 'Delete' || event.key === 'Backspace') {
@@ -336,4 +333,3 @@
 // });
 
 // export { SectionDivider, SectionDividerProtection };
-

@@ -1,83 +1,79 @@
-import React, {
-  useRef,
-  createContext,
-  useContext,
-  useCallback,
-  useSyncExternalStore,
-} from "react";
+import React, { useRef, createContext, useContext, useCallback, useSyncExternalStore } from 'react'
 
 export default function createFastContext<FastContext>(initialState: FastContext) {
   function useFastContextData(): {
-    get: () => FastContext;
-    set: (value: Partial<FastContext>) => void;
-    subscribe: (callback: () => void) => () => void;
+    get: () => FastContext
+    set: (value: Partial<FastContext>) => void
+    subscribe: (callback: () => void) => () => void
   } {
-    const store = useRef(initialState);
+    const store = useRef(initialState)
 
-    const get = useCallback(() => store.current, []);
+    const get = useCallback(() => store.current, [])
 
-    const subscribers = useRef(new Set<() => void>());
+    const subscribers = useRef(new Set<() => void>())
 
     const set = useCallback((value: Partial<FastContext>) => {
-      store.current = { ...store.current, ...value };
-      subscribers.current.forEach((callback) => callback());
-    }, []);
+      store.current = { ...store.current, ...value }
+      subscribers.current.forEach((callback) => callback())
+    }, [])
 
     const subscribe = useCallback((callback: () => void) => {
-      subscribers.current.add(callback);
-      return () => subscribers.current.delete(callback);
-    }, []);
+      subscribers.current.add(callback)
+      return () => subscribers.current.delete(callback)
+    }, [])
 
     return {
       get,
       set,
-      subscribe,
-    };
+      subscribe
+    }
   }
 
-  type UseFastContextDataReturnType = ReturnType<typeof useFastContextData>;
+  type UseFastContextDataReturnType = ReturnType<typeof useFastContextData>
 
-  const FastContext = createContext<UseFastContextDataReturnType | null>(null);
+  const FastContext = createContext<UseFastContextDataReturnType | null>(null)
 
   function FastContextProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-    return (
-      <FastContext.Provider value={useFastContextData()}>
-        {children}
-      </FastContext.Provider>
-    );
+    return <FastContext.Provider value={useFastContextData()}>{children}</FastContext.Provider>
   }
 
   function useFastContext<SelectorOutput>(
     selector: (store: FastContext) => SelectorOutput
   ): [SelectorOutput, (value: Partial<FastContext>) => void] {
-    const fastContext = useContext(FastContext);
+    const fastContext = useContext(FastContext)
     if (!fastContext) {
-      throw new Error("Store not found");
+      throw new Error('Store not found')
     }
 
     const state = useSyncExternalStore(
       fastContext.subscribe,
       () => selector(fastContext.get()),
-      () => selector(initialState),
-    );
+      () => selector(initialState)
+    )
 
-    return [state, fastContext.set];
+    return [state, fastContext.set]
   }
 
-  function useFastContextFields<SelectorOutput>(
-    fieldNames: string[]
-  ): { [key: string]: { get: SelectorOutput, set: (value: any) => void } } {
-    const gettersAndSetters: { [key: string]: { get: SelectorOutput, set: (value: any) => void } } = {};
+  function useFastContextFields<SelectorOutput>(fieldNames: string[]): {
+    [key: string]: { get: SelectorOutput; set: (value: any) => void }
+  } {
+    const gettersAndSetters: { [key: string]: { get: SelectorOutput; set: (value: any) => void } } =
+      {}
     for (const fieldName of fieldNames) {
-      const [getter, setter] = useFastContext((fc) => (fc as Record<string, SelectorOutput>)[fieldName]);
-      gettersAndSetters[fieldName] = { get: getter, set: (value: any) => setter({ [fieldName]: value } as Partial<FastContext>) };
+      const [getter, setter] = useFastContext(
+        (fc) => (fc as Record<string, SelectorOutput>)[fieldName]
+      )
+      gettersAndSetters[fieldName] = {
+        get: getter,
+        set: (value: any) => setter({ [fieldName]: value } as Partial<FastContext>)
+      }
     }
-    
-    return gettersAndSetters;
+
+    return gettersAndSetters
   }
 
   return {
     FastContextProvider,
-    useFastContextFields,
-  };
+    useFastContextFields
+  }
 }

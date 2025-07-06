@@ -7,12 +7,10 @@ export interface IconProps extends Omit<SvgIconProps, 'children'> {
   fallback?: React.ReactNode
 }
 
-const Icon = React.forwardRef<SVGSVGElement, IconProps>(
-  ({ name, fallback, ...props }, ref) => {
-    return <DynamicSvgIcon ref={ref} name={name} fallback={fallback} {...props} />
-  }
-)
+const Icon = React.forwardRef<SVGSVGElement, IconProps>(({ name, fallback, ...props }, ref) => {
+  return <DynamicSvgIcon ref={ref} name={name} fallback={fallback} {...props} />
+})
 
 Icon.displayName = 'Icon'
 
-export default Icon 
+export default Icon

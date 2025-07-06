@@ -1,38 +1,38 @@
-import { useState, createContext, useContext, memo } from "react";
+import { useState, createContext, useContext, memo } from 'react'
 
 function useStoreData() {
   const store = useState({
-    first: "",
-    last: "",
-  });
-  return store;
+    first: '',
+    last: ''
+  })
+  return store
 }
 
-type UseStoreDataReturnType = ReturnType<typeof useStoreData>;
+type UseStoreDataReturnType = ReturnType<typeof useStoreData>
 
-const StoreContext = createContext<UseStoreDataReturnType | null>(null);
+const StoreContext = createContext<UseStoreDataReturnType | null>(null)
 
-const TextInput = ({ value }: { value: "first" | "last" }) => {
-  const [store, setStore] = useContext(StoreContext)!;
+const TextInput = ({ value }: { value: 'first' | 'last' }) => {
+  const [store, setStore] = useContext(StoreContext)!
   return (
     <div className="field">
-      {value}:{" "}
+      {value}:{' '}
       <input
         value={store[value]}
         onChange={(e) => setStore({ ...store, [value]: e.target.value })}
       />
     </div>
-  );
-};
+  )
+}
 
-const Display = ({ value }: { value: "first" | "last" }) => {
-  const [store] = useContext(StoreContext)!;
+const Display = ({ value }: { value: 'first' | 'last' }) => {
+  const [store] = useContext(StoreContext)!
   return (
     <div className="value">
       {value}: {store[value]}
     </div>
-  );
-};
+  )
+}
 
 const FormContainer = memo(() => {
   return (
@@ -41,8 +41,8 @@ const FormContainer = memo(() => {
       <TextInput value="first" />
       <TextInput value="last" />
     </div>
-  );
-});
+  )
+})
 
 const DisplayContainer = memo(() => {
   return (
@@ -51,8 +51,8 @@ const DisplayContainer = memo(() => {
       <Display value="first" />
       <Display value="last" />
     </div>
-  );
-});
+  )
+})
 
 const ContentContainer = memo(() => {
   return (
@@ -61,14 +61,14 @@ const ContentContainer = memo(() => {
       <FormContainer />
       <DisplayContainer />
     </div>
-  );
-});
+  )
+})
 
 function DefaultContextPage() {
   const store = useState({
-    first: "",
-    last: "",
-  });
+    first: '',
+    last: ''
+  })
 
   return (
     <StoreContext.Provider value={store}>
@@ -77,7 +77,7 @@ function DefaultContextPage() {
         <ContentContainer />
       </div>
     </StoreContext.Provider>
-  );
+  )
 }
 
-export default DefaultContextPage;
+export default DefaultContextPage

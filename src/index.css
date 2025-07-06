@@ -251,7 +251,7 @@
   position: relative;
   cursor: pointer;
   transition: background-color 0.2s ease;
-} 
+}
 
 .bookmark-mark:hover {
   background-color: #bae6fd;
@@ -262,7 +262,7 @@
   font-size: 12px;
   margin-left: 4px;
   opacity: 0.7;
-} 
+}
 
 .dark .bookmark-mark {
   background-color: #075985;

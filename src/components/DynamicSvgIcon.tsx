@@ -8,7 +8,8 @@ export interface DynamicSvgIconProps extends Omit<SvgIconProps, 'children'> {
 
 const DynamicSvgIcon = React.forwardRef<SVGSVGElement, DynamicSvgIconProps>(
   ({ name, fallback, ...props }, ref) => {
-    const [IconComponent, setIconComponent] = React.useState<React.ComponentType<SvgIconProps> | null>(null)
+    const [IconComponent, setIconComponent] =
+      React.useState<React.ComponentType<SvgIconProps> | null>(null)
     const [error, setError] = React.useState<boolean>(false)
 
     React.useEffect(() => {
@@ -73,4 +74,4 @@ const DynamicSvgIcon = React.forwardRef<SVGSVGElement, DynamicSvgIconProps>(
 
 DynamicSvgIcon.displayName = 'DynamicSvgIcon'
 
-export default DynamicSvgIcon 
+export default DynamicSvgIcon

@@ -1,5 +1,5 @@
-import { Button } from "../../components/ui/button"
-import { Save, Eye, Settings, Send } from "lucide-react"
+import { Button } from '../../components/ui/button'
+import { Save, Eye, Settings, Send } from 'lucide-react'
 
 export default function Footer() {
   return (

@@ -1,62 +1,62 @@
-const fs = require('fs');
-const path = require('path');
-const { transform } = require('@svgr/core');
+const fs = require('fs')
+const path = require('path')
+const { transform } = require('@svgr/core')
 
-const INPUT_DIR = 'src/assets/icons';
-const OUTPUT_DIR = 'src/components/app/icons';
+const INPUT_DIR = 'src/assets/icons'
+const OUTPUT_DIR = 'src/components/app/icons'
 
 if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true })
 }
 
-const svgFiles = fs.readdirSync(INPUT_DIR).filter(file => file.endsWith('.svg'));
+const svgFiles = fs.readdirSync(INPUT_DIR).filter((file) => file.endsWith('.svg'))
 
 async function processFiles() {
-    for (const file of svgFiles) {
-        const filePath = path.join(INPUT_DIR, file);
-        const componentName = 'Icon' + file
-            .replace(/\.svg$/, '')
-            .replace(/(?:^|-)([a-z])/g, (_, letter) => letter.toUpperCase());
+  for (const file of svgFiles) {
+    const filePath = path.join(INPUT_DIR, file)
+    const componentName =
+      'Icon' +
+      file.replace(/\.svg$/, '').replace(/(?:^|-)([a-z])/g, (_, letter) => letter.toUpperCase())
 
-        const svgCode = fs.readFileSync(filePath, 'utf8');
+    const svgCode = fs.readFileSync(filePath, 'utf8')
 
-        try {
-            const result = await transform(
-                svgCode,
-                {
-                    plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
-                    icon: true,
-                    typescript: true,
-                    svgoConfig: {
-                        plugins: [
-                            {
-                                name: 'preset-default',
-                                params: {
-                                    overrides: {
-                                        removeViewBox: false,
-                                        mergePaths: false
-                                    }
-                                }
-                            },
-                            {
-                                name: 'removeAttrs',
-                                params: {
-                                    attrs: 'fill'
-                                }
-                            }
-                        ]
-                    }
-                },
-                { componentName }
-            );
+    try {
+      const result = await transform(
+        svgCode,
+        {
+          plugins: ['@svgr/plugin-svgo', '@svgr/plugin-jsx'],
+          icon: true,
+          typescript: true,
+          svgoConfig: {
+            plugins: [
+              {
+                name: 'preset-default',
+                params: {
+                  overrides: {
+                    removeViewBox: false,
+                    mergePaths: false
+                  }
+                }
+              },
+              {
+                name: 'removeAttrs',
+                params: {
+                  attrs: 'fill'
+                }
+              }
+            ]
+          }
+        },
+        { componentName }
+      )
 
-            const svgContentMatch = result.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
-            const svgContent = svgContentMatch ? svgContentMatch[1] : '';
+      const svgContentMatch = result.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)
+      const svgContent = svgContentMatch ? svgContentMatch[1] : ''
 
-            //const viewBoxMatch = result.match(/viewBox="([^"]*)"/);
-            //const viewBox = viewBoxMatch ? viewBoxMatch[1] : "0 0 24 24";
+      //const viewBoxMatch = result.match(/viewBox="([^"]*)"/);
+      //const viewBox = viewBoxMatch ? viewBoxMatch[1] : "0 0 24 24";
 
-            const tsCode = `
+      const tsCode = `
 import { forwardRef } from "react";
 
 const ${componentName} = forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>((props, ref) => {
@@ -70,17 +70,16 @@ const ${componentName} = forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>
 ${componentName}.displayName = '${componentName}';
 
 export default ${componentName};
-`;
+`
 
-            const outputPath = path.join(OUTPUT_DIR, `${componentName}.tsx`);
-            fs.writeFileSync(outputPath, tsCode);
+      const outputPath = path.join(OUTPUT_DIR, `${componentName}.tsx`)
+      fs.writeFileSync(outputPath, tsCode)
 
-            console.log(`Converted: ${file} -> ${componentName}.tsx`);
-        } catch (error) {
-            console.error(`Error converting ${file}:`, error);
-        }
+      console.log(`Converted: ${file} -> ${componentName}.tsx`)
+    } catch (error) {
+      console.error(`Error converting ${file}:`, error)
     }
+  }
 }
 
-processFiles()
-    .catch(console.error);
+processFiles().catch(console.error)
