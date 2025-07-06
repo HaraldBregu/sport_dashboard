@@ -66,7 +66,8 @@ const ViewAlert = () => {
 const ButtonShowAlert = () => {
   const [showAlert, setStore] = useStore((store) => store.showAlert);
   return (
-    <button onClick={() => setStore({ showAlert: !showAlert })}>Show Alert</button>
+    <button onClick={() => setStore({showAlert: !showAlert,
+     })}>Show Alert</button>
   );
 };
 

@@ -26,14 +26,14 @@ const appButtonVariants = cva(
       },
       size: {
         // Inherit all base sizes
-        default: buttonVariants({ size: 'default' }),
-        sm: buttonVariants({ size: 'sm' }),
-        lg: buttonVariants({ size: 'lg' }),
-        icon: buttonVariants({ size: 'icon' }),
+        default: cn(buttonVariants({ size: 'default' }), '[&>svg]:!h-4 [&>svg]:!w-4'),
+        sm: cn(buttonVariants({ size: 'sm' }), '[&>svg]:!h-3.5 [&>svg]:!w-3.5'),
+        lg: cn(buttonVariants({ size: 'lg' }), '[&>svg]:!h-5 [&>svg]:!w-5'),
+        icon: cn(buttonVariants({ size: 'icon' }), '[&>svg]:!h-4 [&>svg]:!w-4'),
         // Custom app sizes
-        xl: 'h-12 rounded-lg px-8 text-base font-semibold has-[>svg]:px-6',
-        '2xl': 'h-14 rounded-xl px-10 text-lg font-bold has-[>svg]:px-8',
-        compact: 'h-7 rounded px-2 text-xs font-medium has-[>svg]:px-1.5'
+        xl: 'h-12 rounded-lg px-8 text-base font-semibold has-[>svg]:px-6 [&>svg]:!h-5 [&>svg]:!w-5',
+        '2xl': 'h-14 rounded-xl px-10 text-lg font-bold has-[>svg]:px-8 [&>svg]:!h-6 [&>svg]:!w-6',
+        compact: 'h-7 rounded px-2 text-xs font-medium has-[>svg]:px-1.5 [&>svg]:!h-3 [&>svg]:!w-3'
       },
       rounded: {
         none: 'rounded-none',
