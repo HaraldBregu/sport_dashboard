@@ -524,7 +524,9 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                 <ChevronRight className="h-4 w-4" />
               </ContextBubbleSubmenuTrigger>
               <ContextBubbleSubmenuContent submenu="bookmarks">
-                <ContextBubbleSubmenuItem>Category 1</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem onClick={() => {
+                  console.log('clicked bookmark')
+                }}>Category 1</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
