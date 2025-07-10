@@ -53,6 +53,9 @@ import { useEditor } from './context'
 interface HeaderProps {
   className?: string
   onSetBold: () => void
+  onSetItalic: () => void
+  onSetUnderline: () => void
+  onSetStrike: () => void
   onSetImage: () => void
   onSetComment: () => void
   onSetBookmark: () => void
@@ -62,6 +65,9 @@ interface HeaderProps {
 const Header = ({
   className,
   onSetBold,
+  onSetItalic,
+  onSetUnderline,
+  onSetStrike,
   onSetImage,
   onSetComment,
   onSetBookmark,
@@ -69,9 +75,6 @@ const Header = ({
 }: HeaderProps) => {
   const {
     state,
-    setItalic,
-    setUnderline,
-    setStrike,
     setCode,
     setTextAlign,
     setLink,
@@ -199,13 +202,13 @@ const Header = ({
           <div className="flex items-center gap-1">
             <TextFormatting
               isBold={isBold}
-              setBold={onSetBold}
               isItalic={isItalic}
-              setItalic={setItalic}
               isUnderline={isUnderline}
-              setUnderline={setUnderline}
               isStrike={isStrike}
-              setStrike={setStrike}
+              setBold={onSetBold}
+              setItalic={onSetItalic}
+              setUnderline={onSetUnderline}
+              setStrike={onSetStrike}
             />
             <SeparatorMemo />
           </div>
@@ -381,22 +384,22 @@ const FontSizeSelect = memo(
 const TextFormatting = memo(
   ({
     isBold,
-    setBold,
     isItalic,
-    setItalic,
     isUnderline,
-    setUnderline,
     isStrike,
+    setBold,
+    setItalic,
+    setUnderline,
     setStrike
   }: {
-    isBold: boolean
-    setBold: (isBold: boolean) => void
-    isItalic: boolean
-    setItalic: (isItalic: boolean) => void
-    isUnderline: boolean
-    setUnderline: (isUnderline: boolean) => void
+      isBold: boolean
+      isItalic: boolean
+      isUnderline: boolean
     isStrike: boolean
-    setStrike: (isStrike: boolean) => void
+      setBold: (value: boolean) => void
+      setItalic: (value: boolean) => void
+      setUnderline: (value: boolean) => void
+      setStrike: (value: boolean) => void
   }) => {
     console.log('TextFormatting rendered')
     return (

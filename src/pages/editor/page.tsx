@@ -23,6 +23,15 @@ const EditorPageContent = () => {
             onSetBold={() => {
               contentRef.current?.setBold()
             }}
+            onSetItalic={() => {
+              contentRef.current?.setItalic()
+            }}
+            onSetUnderline={() => {
+              contentRef.current?.setUnderline()
+            }}
+            onSetStrike={() => {
+              contentRef.current?.setStrike()
+            }}
             onSetImage={() => {
               contentRef.current?.setImage()
             }}

@@ -46,6 +46,9 @@ import { useEditor } from './context'
 
 export interface ContentRef {
   setBold: () => void
+  setItalic: () => void
+  setUnderline: () => void
+  setStrike: () => void
   setImage: () => void
   setComment: () => void
   setBookmark: () => void
@@ -60,6 +63,15 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
   useImperativeHandle(ref, () => ({
     setBold: () => {
       editorRef.current?.editor?.chain().focus().toggleBold().run()
+    },
+    setItalic: () => {
+      editorRef.current?.editor?.chain().focus().toggleItalic().run()
+    },
+    setUnderline: () => {
+      editorRef.current?.editor?.chain().focus().toggleUnderline().run()
+    },
+    setStrike: () => {
+      editorRef.current?.editor?.chain().focus().toggleStrike().run()
     },
     setImage: () => {
       const url = window.prompt('URL')
@@ -515,6 +527,25 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               data-context-bubble="separator"
               className={'my-1'}
             />
+            <ContextBubbleSubmenu>
+              <ContextBubbleSubmenuTrigger submenu="bookmarks">
+                <div className="flex items-center">
+                  <Bookmark className="mr-2 h-4 w-4" />
+                  Add a custom style
+                </div>
+                <ChevronRight className="h-4 w-4" />
+              </ContextBubbleSubmenuTrigger>
+              <ContextBubbleSubmenuContent submenu="bookmarks">
+                <ContextBubbleSubmenuItem onClick={() => {
+                  console.log('bold')
+                  editorRef.current?.editor?.chain().focus().toggleBold().run()
+                }}>Bold</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
+              </ContextBubbleSubmenuContent>
+            </ContextBubbleSubmenu>
             <ContextBubbleSubmenu>
               <ContextBubbleSubmenuTrigger submenu="bookmarks">
                 <div className="flex items-center">
