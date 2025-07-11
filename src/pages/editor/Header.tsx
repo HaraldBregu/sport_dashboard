@@ -749,7 +749,9 @@ const StatusSettings = memo(() => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>Export as PDF</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => {
+            console.log('clicked')
+          }}>Export as PDF</DropdownMenuItem>
           <DropdownMenuItem>Export as Word</DropdownMenuItem>
           <DropdownMenuItem>Print</DropdownMenuItem>
           <DropdownMenuItem>Share</DropdownMenuItem>

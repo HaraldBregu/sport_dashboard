@@ -528,21 +528,100 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               className={'my-1'}
             />
             <ContextBubbleSubmenu>
-              <ContextBubbleSubmenuTrigger submenu="bookmarks">
+              <ContextBubbleSubmenuTrigger submenu="custom-style">
                 <div className="flex items-center">
                   <Bookmark className="mr-2 h-4 w-4" />
                   Add a custom style
                 </div>
                 <ChevronRight className="h-4 w-4" />
               </ContextBubbleSubmenuTrigger>
-              <ContextBubbleSubmenuContent submenu="bookmarks">
+              <ContextBubbleSubmenuContent submenu="custom-style">
                 <ContextBubbleSubmenuItem onClick={() => {
-                  console.log('bold')
-                  editorRef.current?.editor?.chain().focus().toggleBold().run()
-                }}>Bold</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
+                  editorRef.current?.editor
+                    ?.chain()
+                    .focus()
+                    .setDataMark(
+                      'BOOKMARK_SDJFHBSKGRBEH4356JHBLKJHGBFD1',
+                      'bookmark', {
+                      bold: true,
+                      italic: true,
+                      fontSize: '16px',
+                      fontFamily: 'Arial',
+                      color: 'red',
+                      backgroundColor: 'blue',
+                      textDecoration: 'underline',
+                      textTransform: 'uppercase'
+                    })
+                    .run()
+                }}>Style one</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem onClick={() => {
+                  editorRef.current?.editor
+                    ?.chain()
+                    .focus()
+                    .setDataMark(
+                      'COMMENT_SDJFHBSKGRBEH4356JHBLKJHGBFD1',
+                      'comment', {
+                      bold: true,
+                      italic: true,
+                      fontSize: '28px',
+                      fontFamily: 'Times New Roman',
+                      color: 'blue',
+                      backgroundColor: 'red',
+                      textDecoration: 'underline',
+                      textTransform: 'uppercase'
+                    })
+                    .run()
+                }}>Style two</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem
+                  onClick={() => {
+                    const editor = editorRef.current?.editor
+                    if (!editor) return
+                    const { from, to } = editor.state.selection;
+                    if (from === to) return
+
+                    const fragment = editor.state.selection.content();
+                    const domSerializer = editor.schema.cached.domSerializer;
+                    const temp = document.createElement('div');
+                    const slice = fragment.content;
+                    domSerializer.serializeFragment(slice, { document }, temp);
+                    const selectedHtml = temp.innerHTML;
+
+                    console.log('Selected HTML:', selectedHtml)
+
+                    const innerHtml = selectedHtml
+
+                    writeClipboardItem(innerHtml, editor.getText())
+                      .then(() => {
+                      })
+                      .catch((err) => {
+                        console.error('Clipboard write failed:', err);
+                      });
+
+                  }}>
+                  Copy selected text
+                </ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem onClick={() => {
+                  readClipboardItems()
+                    .then((items) => {
+                      const editor = editorRef.current?.editor
+                      if (!editor) return
+
+                      items.forEach(async (item) => {
+                        if (item.types.includes('text/html')) {
+                          const blob = await item.getType('text/html');
+                          const html = await blob.text();
+                          console.log('HTML pasted:', html)
+                          editor.commands.insertContent(html)
+                          editor.commands.focus()
+                        } else if (item.types.includes('text/plain')) {
+                          // const blob = await item.getType('text/plain');
+                          // const text = await blob.text();
+                          // editor.commands.insertContent(text)
+                          // editor.commands.focus()
+                        }
+                      })
+                    })
+                }}>Paste copied text</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
               </ContextBubbleSubmenuContent>
             </ContextBubbleSubmenu>
@@ -555,7 +634,9 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                 <ChevronRight className="h-4 w-4" />
               </ContextBubbleSubmenuTrigger>
               <ContextBubbleSubmenuContent submenu="bookmarks">
-                <ContextBubbleSubmenuItem>Category 1</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem onClick={() => {
+                  console.log('clicked bookmark')
+                }}>Category 1</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
@@ -661,3 +742,24 @@ const ResizablePanelGroupMemo = memo(
 const ResizablePanelMemo = memo(({ ...props }: React.ComponentProps<typeof ResizablePanel>) => {
   return <ResizablePanel {...props} />
 })
+
+export const writeClipboardItem = (innerHtml: string, text: string): Promise<void> => {
+  const clipboardItems = [new ClipboardItem({
+    'text/plain': new Blob([text], { type: 'text/plain' }),
+    'text/html': new Blob([innerHtml], { type: 'text/html' }),
+  })]
+
+  return writeClipboardItems(clipboardItems)
+}
+
+export const writeClipboardItems = (items: ClipboardItem[]): Promise<void> => {
+  return navigator.clipboard.write(items)
+}
+
+export const readClipboardItems = (): Promise<ClipboardItem[]> => {
+  return navigator.clipboard.read()
+}
+
+export const readClipboardText = (): Promise<string> => {
+  return navigator.clipboard.readText()
+}

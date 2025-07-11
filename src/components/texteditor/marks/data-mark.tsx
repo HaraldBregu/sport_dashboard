@@ -47,7 +47,7 @@ export const DataMark = Mark.create<DataMarkOptions>({
   addAttributes() {
     return {
       id: {
-        default: null,
+        default: "lhbdlfjhbdshf",
         parseHTML: (element) => element.getAttribute('data-id'),
         renderHTML: (attributes) => {
           if (!attributes.id) {
@@ -59,7 +59,7 @@ export const DataMark = Mark.create<DataMarkOptions>({
         }
       },
       type: {
-        default: null,
+        default: "BOOKMARK",
         parseHTML: (element) => element.getAttribute('data-type'),
         renderHTML: (attributes) => {
           if (!attributes.type) {
@@ -181,7 +181,7 @@ export const DataMark = Mark.create<DataMarkOptions>({
     return [
       {
         tag: 'span[data-mark]'
-      }
+      },
     ]
   },
 
@@ -198,11 +198,29 @@ export const DataMark = Mark.create<DataMarkOptions>({
     if (HTMLAttributes.textDecoration) styles.push(`text-decoration: ${HTMLAttributes.textDecoration}`)
     if (HTMLAttributes.textTransform) styles.push(`text-transform: ${HTMLAttributes.textTransform}`)
 
+      const dataAttributes = {
+        'data-mark': 'true',
+        'data-id': HTMLAttributes.id || '',
+        'data-type': HTMLAttributes.type || '',
+        'data-bold': HTMLAttributes.bold ? 'true' : undefined,
+        'data-italic': HTMLAttributes.italic ? 'true' : undefined,
+        'data-font-size': HTMLAttributes.fontSize,
+        'data-font-family': HTMLAttributes.fontFamily,
+        'data-color': HTMLAttributes.color,
+        'data-background-color': HTMLAttributes.backgroundColor,
+        'data-text-decoration': HTMLAttributes.textDecoration,
+        'data-text-transform': HTMLAttributes.textTransform,
+        style: styles.join(';')
+      }
+  
     return [
       'span',
+      // mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, dataAttributes),
+
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
-        'data-mark': 'true',
-        style: styles.join(';')
+        ...dataAttributes,
+        // 'data-mark': 'true',
+        // style: styles.join(';')
       }),
       0
     ]

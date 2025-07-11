@@ -13,9 +13,10 @@ import CodeBlock from '@tiptap/extension-code-block'
 import Paragraph from '@tiptap/extension-paragraph'
 import Heading from '@tiptap/extension-heading'
 import TextStyleExtended from './extensions/textstyle-extension'
-import CommentMark from './marks/comment-mark'
-import BookmarkMark from './marks/bookmark-mark'
+// import CommentMark from './marks/comment-mark'
+// import BookmarkMark from './marks/bookmark-mark'
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
+import DataMark from './marks/data-mark'
 
 export interface TextEditorRef {
   editor: Editor | null
@@ -56,6 +57,7 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
     ref
   ) => {
     const editor = useEditor({
+      shouldRerenderOnTransaction: false,
       extensions: [
         StarterKit.configure({
           heading: false
@@ -100,14 +102,19 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
           }
         }),
         HorizontalRule,
-        CommentMark.configure({
+        // CommentMark.configure({
+        //   HTMLAttributes: {
+        //     class: 'comment-mark'
+        //   }
+        // }),
+        // BookmarkMark.configure({
+        //   HTMLAttributes: {
+        //     class: 'bookmark-mark'
+        //   }
+        // }),
+        DataMark.configure({
           HTMLAttributes: {
-            class: 'comment-mark'
-          }
-        }),
-        BookmarkMark.configure({
-          HTMLAttributes: {
-            class: 'bookmark-mark'
+            class: 'data-mark'
           }
         })
       ],
@@ -126,7 +133,7 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
             onClick?.(event)
             return true
           }
-        }
+        },
       },
       content: content || '',
       editable,
@@ -135,7 +142,7 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
         const json = editor.getJSON()
         console.log(JSON.stringify(json))
         onChange?.(html)
-      }
+      },
     })
 
     if (!editor) {

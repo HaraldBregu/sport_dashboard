@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 const CONTEXT_BUBBLE_Z_INDEX = 50
 
@@ -149,9 +150,23 @@ function ContextBubble({
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (bubbleRef.current && !bubbleRef.current.contains(event.target as Node)) {
-        onClose()
+      const target = event.target as Node
+
+      // Check if click is inside the main bubble
+      if (bubbleRef.current && bubbleRef.current.contains(target)) {
+        return
       }
+
+      // Check if click is inside any submenu content
+      const submenuContents = document.querySelectorAll('[data-context-bubble="submenu-content"]')
+      for (const submenuContent of submenuContents) {
+        if (submenuContent.contains(target)) {
+          return
+        }
+      }
+
+      // If click is outside both main bubble and submenus, close
+      onClose()
     }
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -389,18 +404,25 @@ const ContextBubbleSubmenuTrigger = React.forwardRef<
 
 ContextBubbleSubmenuTrigger.displayName = 'ContextBubbleSubmenuTrigger'
 
-const ContextBubbleSubmenuContent = React.forwardRef<
+const ContextBubbleSubmenuContent = forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
     submenu: string
   }
 >(({ className, children, submenu, ...props }, ref) => {
-  const { showSubmenu, submenuPositions, portalContainerRef, setShowSubmenu, position } =
-    useContextBubble()
-  const contentRef = React.useRef<HTMLDivElement>(null)
-  const [contentPosition, setContentPosition] = React.useState({ x: 0, y: 0 })
 
-  React.useLayoutEffect(() => {
+  const {
+    showSubmenu,
+    submenuPositions,
+    portalContainerRef,
+    setShowSubmenu,
+    position
+  } = useContextBubble()
+
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [contentPosition, setContentPosition] = useState({ x: 0, y: 0 })
+
+  useLayoutEffect(() => {
     if (showSubmenu === submenu && contentRef.current && submenuPositions[submenu]) {
       const triggerPos = submenuPositions[submenu]
       const contentRect = contentRef.current.getBoundingClientRect()
@@ -443,16 +465,34 @@ const ContextBubbleSubmenuContent = React.forwardRef<
     }
   }, [showSubmenu, submenu, submenuPositions, position])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (showSubmenu !== submenu) return
     function handleClickOutside(event: MouseEvent) {
-      if (contentRef.current && !contentRef.current.contains(event.target as Node)) {
-        setShowSubmenu(null)
+      const target = event.target as Node
+
+      // Don't close if clicking inside the submenu content
+      if (contentRef.current && contentRef.current.contains(target)) {
+        return
       }
+
+      // Don't close if clicking on submenu items (let the main bubble handle it)
+      const isSubmenuItem = (target as Element).closest('[data-context-bubble="submenu-item"]')
+      if (isSubmenuItem) {
+        return
+      }
+
+      // Don't close if clicking inside the main bubble (let the main bubble handle it)
+      const mainBubble = document.querySelector('[data-context-bubble="bubble"]')
+      if (mainBubble && mainBubble.contains(target)) {
+        return
+      }
+
+      setShowSubmenu(null)
     }
-    document.addEventListener('mousedown', handleClickOutside)
+    // Use 'click' instead of 'mousedown' to allow onClick handlers to fire first
+    document.addEventListener('click', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('click', handleClickOutside)
     }
   }, [showSubmenu, submenu, setShowSubmenu])
 
