@@ -14,9 +14,15 @@ import Paragraph from '@tiptap/extension-paragraph'
 import Heading from '@tiptap/extension-heading'
 import TextStyleExtended from './extensions/textstyle-extension'
 // import CommentMark from './marks/comment-mark'
-// import BookmarkMark from './marks/bookmark-mark'
+import BookmarkMark from './marks/bookmark-mark'
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
 import DataMark from './marks/data-mark'
+import { ApparatusNode } from './nodes/apparatus-node'
+import NoteMark from './marks/note-mark'
+import { Section } from './nodes/section-node'
+import { NodeView } from './nodes/node-views'
+// import { EditorProvider } from '@tiptap/react'
+import { CommentMark } from './marks/comment'
 
 export interface TextEditorRef {
   editor: Editor | null
@@ -107,16 +113,21 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
         //     class: 'comment-mark'
         //   }
         // }),
-        // BookmarkMark.configure({
-        //   HTMLAttributes: {
-        //     class: 'bookmark-mark'
-        //   }
-        // }),
+        CommentMark,
+        BookmarkMark.configure({
+          HTMLAttributes: {
+            class: 'bookmark-mark'
+          }
+        }),
         DataMark.configure({
           HTMLAttributes: {
             class: 'data-mark'
           }
-        })
+        }),
+        ApparatusNode,
+        NoteMark,
+        Section,
+        NodeView,
       ],
       editorProps: {
         attributes: {
@@ -126,9 +137,10 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
         handleDOMEvents: {
           contextmenu: (view, event) => {
             event.preventDefault()
-
             const { selection } = view.state
             if (selection.empty) return false
+
+            console.log('contextmenu dom', event)
 
             onClick?.(event)
             return true
@@ -181,7 +193,11 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
           editor={editor}
           className={`prose prose-sm max-w-none focus:outline-none h-full ${className}`}
           style={style}
-          onContextMenu={onContextMenu}
+          onContextMenu={(event) => {
+            console.log('contextmenu', event)
+            onContextMenu?.(event)
+        
+          }}
           {...props}
         />
       </>

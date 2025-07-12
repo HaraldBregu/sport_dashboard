@@ -39,9 +39,7 @@ import {
   Heading6
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
-import { testContent, testContent2 } from './data'
-import React from 'react'
+import { testContent3 } from './data'
 import { useEditor } from './context'
 
 export interface ContentRef {
@@ -154,10 +152,35 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
     headingLevel
   } = state
 
-  const handleContextMenu = (event: React.MouseEvent) => {
+  // const handleContextMenu = (event: React.MouseEvent) => {
+  //   console.log('handleContextMenu handle', event)
+  //   event.preventDefault()
+  //   const selection = window.getSelection()
+
+  //   console.log('selection', selection)
+  //   if (selection && !selection.isCollapsed) {
+  //     const range = selection.getRangeAt(0)
+  //     const rect = range.getBoundingClientRect()
+  //     setSelectionRect(rect)
+  //     const initialX = rect.left + rect.width / 2
+  //     const initialY = rect.top - 10
+  //     setContextBubble({ x: initialX, y: initialY })
+  //   } else if (selection) {
+  //     const range = selection.getRangeAt(0)
+  //     const rect = range.getBoundingClientRect()
+  //     setSelectionRect(rect)
+  //     const initialX = rect.left + rect.width / 2
+  //     const initialY = rect.top - 10
+  //     setContextBubble({ x: initialX, y: initialY })
+  //   }
+  // }
+
+  const handleContextMenu = (event: MouseEvent) => {
+    console.log('handleContextMenu handle', event)
     event.preventDefault()
     const selection = window.getSelection()
 
+    console.log('selection', selection)
     if (selection && !selection.isCollapsed) {
       const range = selection.getRangeAt(0)
       const rect = range.getBoundingClientRect()
@@ -249,7 +272,18 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
 
   return (
     <>
-      <ResizablePanelGroupMemo direction="horizontal" className="h-full">
+      <div className="h-full w-full overflow-hidden relative">
+        <div className="h-10 w-full absolute top-0 z-10 bg-gradient-to-t from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
+        <TextEditor
+          ref={editorRef}
+          placeholder={placeholder}
+          className="h-full w-full"
+          content={testContent3}
+          onClick={handleContextMenu}
+        />
+        <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
+      </div>
+      {/* <ResizablePanelGroupMemo direction="horizontal" className="h-full">
         <ResizablePanelMemo minSize={40}>
           <div className="h-full w-full overflow-hidden relative">
             <div className="h-10 w-full absolute top-0 z-10 bg-gradient-to-t from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
@@ -257,8 +291,9 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               ref={editorRef}
               placeholder={placeholder}
               className="h-full w-full"
-              content={testContent}
-              onContextMenu={handleContextMenu}
+              content={testContent3}
+              // onContextMenu={handleContextMenu}
+              onClick={handleContextMenu}
             />
             <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
           </div>
@@ -271,12 +306,12 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               placeholder={placeholder}
               className="h-full w-full"
               content={testContent2}
-              onContextMenu={handleContextMenu}
+              // onContextMenu={handleContextMenu}
             />
             <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
           </div>
         </ResizablePanelMemo>
-      </ResizablePanelGroupMemo>
+      </ResizablePanelGroupMemo> */}
 
       {contextBubble && (
         <ContextBubbleProvider
@@ -407,15 +442,26 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               >
                 <LinkIcon className="h-4 w-4" />
               </ContextBubbleButton>
-
               <ContextBubbleButton
                 tooltip="Remove Link"
                 variant={isLink ? 'selected' : 'default'}
                 onClick={() => {
                   editorRef.current?.editor?.chain().focus().unsetLink().run()
-                }}
-              >
+                }}>
                 <Unlink className="h-4 w-4" />
+              </ContextBubbleButton>
+              <ContextBubbleButton
+                tooltip="Comment"
+                variant={'default'}
+                onClick={() => {
+
+                  editorRef.current?.editor?.chain().focus().setComment({
+                    threadId: crypto.randomUUID(),
+                    status: 'open',
+                    state: 'default'
+                  }).run()
+                }}>
+                <MessageCircle className="h-4 w-4" />
               </ContextBubbleButton>
             </ContextBubbleGroup>
             <Separator
@@ -531,29 +577,39 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               <ContextBubbleSubmenuTrigger submenu="custom-style">
                 <div className="flex items-center">
                   <Bookmark className="mr-2 h-4 w-4" />
-                  Add a custom style
+                  Custom
                 </div>
                 <ChevronRight className="h-4 w-4" />
               </ContextBubbleSubmenuTrigger>
               <ContextBubbleSubmenuContent submenu="custom-style">
                 <ContextBubbleSubmenuItem onClick={() => {
-                  editorRef.current?.editor
-                    ?.chain()
-                    .focus()
-                    .setDataMark(
-                      'BOOKMARK_SDJFHBSKGRBEH4356JHBLKJHGBFD1',
-                      'bookmark', {
-                      bold: true,
-                      italic: true,
-                      fontSize: '16px',
-                      fontFamily: 'Arial',
-                      color: 'red',
-                      backgroundColor: 'blue',
-                      textDecoration: 'underline',
-                      textTransform: 'uppercase'
-                    })
-                    .run()
-                }}>Style one</ContextBubbleSubmenuItem>
+                  editorRef.current?.editor?.chain().focus().setComment({
+                    threadId: '2c182121-d6c1-45a2-a151-60e0f2fd1d49',
+                    status: 'open',
+                    state: 'default'
+                  }).run()
+                }}>Set comment</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem
+                  onClick={() => {
+                    editorRef.current?.editor
+                      ?.chain()
+                      .focus()
+                      .setDataMark(
+                        'BOOKMARK_SDJFHBSKGRBEH4356JHBLKJHGBFD1',
+                        'bookmark', {
+                        bold: true,
+                        italic: true,
+                        fontSize: '16px',
+                        fontFamily: 'Arial',
+                        color: 'red',
+                        backgroundColor: 'blue',
+                        textDecoration: 'underline',
+                        textTransform: 'uppercase'
+                      })
+                      .run()
+                  }}>
+                  Style one
+                </ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem onClick={() => {
                   editorRef.current?.editor
                     ?.chain()
@@ -590,39 +646,60 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
 
                     const innerHtml = selectedHtml
 
-                    writeClipboardItem(innerHtml, editor.getText())
-                      .then(() => {
-                      })
-                      .catch((err) => {
-                        console.error('Clipboard write failed:', err);
-                      });
+                    // writeClipboardItem(innerHtml, editor.getText())
+                    //   .then(() => {
+                    //   })
+                    //   .catch((err) => {
+                    //     console.error('Clipboard write failed:', err);
+                    //   });
 
                   }}>
                   Copy selected text
                 </ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem onClick={() => {
-                  readClipboardItems()
-                    .then((items) => {
-                      const editor = editorRef.current?.editor
-                      if (!editor) return
+                  // readClipboardItems()
+                  //   .then((items) => {
+                  //     const editor = editorRef.current?.editor
+                  //     if (!editor) return
 
-                      items.forEach(async (item) => {
-                        if (item.types.includes('text/html')) {
-                          const blob = await item.getType('text/html');
-                          const html = await blob.text();
-                          console.log('HTML pasted:', html)
-                          editor.commands.insertContent(html)
-                          editor.commands.focus()
-                        } else if (item.types.includes('text/plain')) {
-                          // const blob = await item.getType('text/plain');
-                          // const text = await blob.text();
-                          // editor.commands.insertContent(text)
-                          // editor.commands.focus()
-                        }
-                      })
-                    })
+                  //     items.forEach(async (item) => {
+                  //       if (item.types.includes('text/html')) {
+                  //         const blob = await item.getType('text/html');
+                  //         const html = await blob.text();
+                  //         console.log('HTML pasted:', html)
+                  //         editor.commands.insertContent(html)
+                  //         editor.commands.focus()
+                  //       } else if (item.types.includes('text/plain')) {
+                  //         // const blob = await item.getType('text/plain');
+                  //         // const text = await blob.text();
+                  //         // editor.commands.insertContent(text)
+                  //         // editor.commands.focus()
+                  //       }
+                  //     })
+                  //   })
                 }}>Paste copied text</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem
+                  onClick={() => {
+                    editorRef.current?.editor?.commands.setApparatus()
+                  }}>
+                  Set apparatus
+                </ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem
+                  onClick={() => {
+                    editorRef.current?.editor?.commands.setNote({
+                      note: 'This is a note',
+                      author: 'John Doe',
+                      noteId: '123'
+                    })
+                  }}>
+                  Set page notes
+                </ContextBubbleSubmenuItem>
+                <ContextBubbleSubmenuItem
+                  onClick={() => {
+                    editorRef.current?.editor?.commands.setSection()
+                  }}>
+                  Set section
+                </ContextBubbleSubmenuItem>
               </ContextBubbleSubmenuContent>
             </ContextBubbleSubmenu>
             <ContextBubbleSubmenu>
@@ -729,37 +806,37 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
 
 export default memo(Content)
 
-const ResizableHandleMemo = memo(({ ...props }: React.ComponentProps<typeof ResizableHandle>) => {
-  return <ResizableHandle {...props} />
-})
+// const ResizableHandleMemo = memo(({ ...props }: React.ComponentProps<typeof ResizableHandle>) => {
+//   return <ResizableHandle {...props} />
+// })
 
-const ResizablePanelGroupMemo = memo(
-  ({ ...props }: React.ComponentProps<typeof ResizablePanelGroup>) => {
-    return <ResizablePanelGroup {...props} />
-  }
-)
+// const ResizablePanelGroupMemo = memo(
+//   ({ ...props }: React.ComponentProps<typeof ResizablePanelGroup>) => {
+//     return <ResizablePanelGroup {...props} />
+//   }
+// )
 
-const ResizablePanelMemo = memo(({ ...props }: React.ComponentProps<typeof ResizablePanel>) => {
-  return <ResizablePanel {...props} />
-})
+// const ResizablePanelMemo = memo(({ ...props }: React.ComponentProps<typeof ResizablePanel>) => {
+//   return <ResizablePanel {...props} />
+// })
 
-export const writeClipboardItem = (innerHtml: string, text: string): Promise<void> => {
-  const clipboardItems = [new ClipboardItem({
-    'text/plain': new Blob([text], { type: 'text/plain' }),
-    'text/html': new Blob([innerHtml], { type: 'text/html' }),
-  })]
+// export const writeClipboardItem = (innerHtml: string, text: string): Promise<void> => {
+//   const clipboardItems = [new ClipboardItem({
+//     'text/plain': new Blob([text], { type: 'text/plain' }),
+//     'text/html': new Blob([innerHtml], { type: 'text/html' }),
+//   })]
 
-  return writeClipboardItems(clipboardItems)
-}
+//   return writeClipboardItems(clipboardItems)
+// }
 
-export const writeClipboardItems = (items: ClipboardItem[]): Promise<void> => {
-  return navigator.clipboard.write(items)
-}
+// export const writeClipboardItems = (items: ClipboardItem[]): Promise<void> => {
+//   return navigator.clipboard.write(items)
+// }
 
-export const readClipboardItems = (): Promise<ClipboardItem[]> => {
-  return navigator.clipboard.read()
-}
+// export const readClipboardItems = (): Promise<ClipboardItem[]> => {
+//   return navigator.clipboard.read()
+// }
 
-export const readClipboardText = (): Promise<string> => {
-  return navigator.clipboard.readText()
-}
+// export const readClipboardText = (): Promise<string> => {
+//   return navigator.clipboard.readText()
+// }
