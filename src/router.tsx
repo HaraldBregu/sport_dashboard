@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
-import EditorPage from './pages/editor/page'
+import EditorPage from './pages/apparatus-editor/page'
 // import DemoPage from './pages/demo/page'
 // import FastContextPage from './pages/fast-context/page'
 // import DefaultContextPage from './pages/default-context/page'

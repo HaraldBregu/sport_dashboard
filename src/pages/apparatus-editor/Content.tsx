@@ -11,21 +11,11 @@ import {
   ContextBubbleSubmenuItem
 } from '@/components/texteditor/context-bubble'
 import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
   Bold,
   ChevronRight,
   Code,
-  Highlighter,
   Italic,
-  LinkIcon,
-  List,
-  ListOrdered,
-  Quote,
   Strikethrough,
-  UnderlineIcon,
-  Unlink,
   Heading1,
   Heading2,
   Heading3,
@@ -33,14 +23,15 @@ import {
   Bookmark,
   MessageCircle,
   Sigma,
-  AlignJustify,
   Heading4,
   Heading5,
-  Heading6
+  Heading6,
+  StickyNote
 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { testContent3 } from './data'
 import { useEditor } from './context'
+import { Button } from '@/components/ui/button'
 
 export interface ContentRef {
   setBold: () => void
@@ -66,24 +57,13 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
       editorRef.current?.editor?.chain().focus().toggleItalic().run()
     },
     setUnderline: () => {
-      editorRef.current?.editor?.chain().focus().toggleUnderline().run()
+
     },
     setStrike: () => {
       editorRef.current?.editor?.chain().focus().toggleStrike().run()
     },
     setImage: () => {
-      const url = window.prompt('URL')
-      if (url) {
-        editorRef.current?.editor
-          ?.chain()
-          .focus()
-          .setImage({
-            src: url,
-            title: 'Image example',
-            alt: 'Image example'
-          })
-          .run()
-      }
+
     },
     setComment: () => {
       const editor = editorRef.current?.editor
@@ -140,43 +120,12 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
     selectionRect,
     isBold,
     isItalic,
-    isUnderline,
     isStrike,
     isCode,
-    isHighlight,
-    textAlign,
-    isLink,
-    isBulletList,
-    isOrderedList,
-    isBlockquote,
     headingLevel
   } = state
 
-  // const handleContextMenu = (event: React.MouseEvent) => {
-  //   console.log('handleContextMenu handle', event)
-  //   event.preventDefault()
-  //   const selection = window.getSelection()
-
-  //   console.log('selection', selection)
-  //   if (selection && !selection.isCollapsed) {
-  //     const range = selection.getRangeAt(0)
-  //     const rect = range.getBoundingClientRect()
-  //     setSelectionRect(rect)
-  //     const initialX = rect.left + rect.width / 2
-  //     const initialY = rect.top - 10
-  //     setContextBubble({ x: initialX, y: initialY })
-  //   } else if (selection) {
-  //     const range = selection.getRangeAt(0)
-  //     const rect = range.getBoundingClientRect()
-  //     setSelectionRect(rect)
-  //     const initialX = rect.left + rect.width / 2
-  //     const initialY = rect.top - 10
-  //     setContextBubble({ x: initialX, y: initialY })
-  //   }
-  // }
-
   const handleContextMenu = (event: MouseEvent) => {
-    console.log('handleContextMenu handle', event)
     event.preventDefault()
     const selection = window.getSelection()
 
@@ -283,35 +232,6 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
         />
         <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
       </div>
-      {/* <ResizablePanelGroupMemo direction="horizontal" className="h-full">
-        <ResizablePanelMemo minSize={40}>
-          <div className="h-full w-full overflow-hidden relative">
-            <div className="h-10 w-full absolute top-0 z-10 bg-gradient-to-t from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
-            <TextEditor
-              ref={editorRef}
-              placeholder={placeholder}
-              className="h-full w-full"
-              content={testContent3}
-              // onContextMenu={handleContextMenu}
-              onClick={handleContextMenu}
-            />
-            <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
-          </div>
-        </ResizablePanelMemo>
-        <ResizableHandleMemo withHandle />
-        <ResizablePanelMemo minSize={30}>
-          <div className="h-full w-full overflow-hidden relative">
-            <div className="h-10 w-full absolute top-0 z-10 bg-gradient-to-t from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
-            <TextEditor
-              placeholder={placeholder}
-              className="h-full w-full"
-              content={testContent2}
-              // onContextMenu={handleContextMenu}
-            />
-            <div className="h-10 w-full absolute bottom-0 z-10 bg-gradient-to-b from-transparent via-white/30 to-white/70 dark:from-transparent dark:via-background/30 dark:to-background/70" />
-          </div>
-        </ResizablePanelMemo>
-      </ResizablePanelGroupMemo> */}
 
       {contextBubble && (
         <ContextBubbleProvider
@@ -344,15 +264,6 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                 <Italic className="h-4 w-4" />
               </ContextBubbleButton>
               <ContextBubbleButton
-                tooltip="Underline"
-                variant={isUnderline ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().toggleUnderline().run()
-                }}
-              >
-                <UnderlineIcon className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
                 tooltip="Strikethrough"
                 variant={isStrike ? 'selected' : 'default'}
                 onClick={() => {
@@ -371,16 +282,6 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               >
                 <Code className="h-4 w-4" />
               </ContextBubbleButton>
-
-              <ContextBubbleButton
-                tooltip="Highlight"
-                variant={isHighlight ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().toggleHighlight().run()
-                }}
-              >
-                <Highlighter className="h-4 w-4" />
-              </ContextBubbleButton>
             </ContextBubbleGroup>
             <Separator
               data-slot="context-bubble-separator"
@@ -389,66 +290,20 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
             />
             <ContextBubbleGroup>
               <ContextBubbleButton
-                tooltip="Align Left"
-                variant={textAlign === 'left' ? 'selected' : 'default'}
+                tooltip="Apparatus"
+                variant={'default'}
                 onClick={() => {
-                  editorRef.current?.editor?.chain().focus().setTextAlign('left').run()
-                }}
-              >
-                <AlignLeft className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Align Center"
-                variant={textAlign === 'center' ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().setTextAlign('center').run()
-                }}
-              >
-                <AlignCenter className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Align Right"
-                variant={textAlign === 'right' ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().setTextAlign('right').run()
-                }}
-              >
-                <AlignRight className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Justify"
-                variant={textAlign === 'justify' ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().setTextAlign('justify').run()
-                }}
-              >
-                <AlignJustify className="h-4 w-4" />
-              </ContextBubbleButton>
-            </ContextBubbleGroup>
-            <Separator
-              data-slot="context-bubble-separator"
-              data-context-bubble="separator"
-              className={'my-1'}
-            />
-            <ContextBubbleGroup>
-              <ContextBubbleButton
-                tooltip="Add Link"
-                variant={isLink ? 'selected' : 'default'}
-                onClick={() => {
-                  const url = window.prompt('Enter URL:', 'https://')
-                  if (!url) return
-                  editorRef.current?.editor?.chain().focus().toggleLink({ href: url }).run()
-                }}
-              >
-                <LinkIcon className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Remove Link"
-                variant={isLink ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().unsetLink().run()
+                  editorRef.current
+                    ?.editor
+                    ?.chain()
+                    .focus()
+                    .setApparatus({
+                      id: '123',
+                      type: 'CRITICAL'
+                    })
+                    .run()
                 }}>
-                <Unlink className="h-4 w-4" />
+                <StickyNote className="h-4 w-4" />
               </ContextBubbleButton>
               <ContextBubbleButton
                 tooltip="Comment"
@@ -467,7 +322,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                 <MessageCircle className="h-4 w-4" />
               </ContextBubbleButton>
               <ContextBubbleButton
-                tooltip="Note Mention"
+                tooltip="Apparatus Note"
                 variant={'default'}
                 onClick={() => {
                   editorRef.current
@@ -481,7 +336,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                       highlightColor: 'yellow'
                     }).run()
                 }}>
-                <MessageCircle className="h-4 w-4" />
+                <StickyNote className="h-4 w-4" />
               </ContextBubbleButton>
             </ContextBubbleGroup>
             <Separator
@@ -489,35 +344,41 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
               data-context-bubble="separator"
               className={'my-1'}
             />
-            <ContextBubbleGroup>
-              <ContextBubbleButton
-                tooltip="Bullet List"
-                variant={isBulletList ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().toggleBulletList().run()
-                }}
-              >
-                <List className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Numbered List"
-                variant={isOrderedList ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().toggleOrderedList().run()
-                }}
-              >
-                <ListOrdered className="h-4 w-4" />
-              </ContextBubbleButton>
-              <ContextBubbleButton
-                tooltip="Quote"
-                variant={isBlockquote ? 'selected' : 'default'}
-                onClick={() => {
-                  editorRef.current?.editor?.chain().focus().toggleBlockquote().run()
-                }}
-              >
-                <Quote className="h-4 w-4" />
-              </ContextBubbleButton>
-            </ContextBubbleGroup>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                editorRef.current?.editor?.chain().focus().setApparatus({
+                  id: '123',
+                  type: 'CRITICAL'
+                }).run()
+              }}
+            >
+              Add apparatus
+            </Button>
+            <Separator
+              data-slot="context-bubble-separator"
+              data-context-bubble="separator"
+              className={'my-1'}
+            />
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                editorRef.current
+                  ?.editor
+                  ?.chain()
+                  .focus()
+                  .setNoteMention({
+                    note: 'This is a note',
+                    author: 'John Doe',
+                    noteId: '123',
+                    highlightColor: 'pink'
+                  }).run()
+              }}
+            >
+              Add apparatus note
+            </Button>
             <Separator
               data-slot="context-bubble-separator"
               data-context-bubble="separator"
@@ -825,38 +686,3 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
 })
 
 export default memo(Content)
-
-// const ResizableHandleMemo = memo(({ ...props }: React.ComponentProps<typeof ResizableHandle>) => {
-//   return <ResizableHandle {...props} />
-// })
-
-// const ResizablePanelGroupMemo = memo(
-//   ({ ...props }: React.ComponentProps<typeof ResizablePanelGroup>) => {
-//     return <ResizablePanelGroup {...props} />
-//   }
-// )
-
-// const ResizablePanelMemo = memo(({ ...props }: React.ComponentProps<typeof ResizablePanel>) => {
-//   return <ResizablePanel {...props} />
-// })
-
-// export const writeClipboardItem = (innerHtml: string, text: string): Promise<void> => {
-//   const clipboardItems = [new ClipboardItem({
-//     'text/plain': new Blob([text], { type: 'text/plain' }),
-//     'text/html': new Blob([innerHtml], { type: 'text/html' }),
-//   })]
-
-//   return writeClipboardItems(clipboardItems)
-// }
-
-// export const writeClipboardItems = (items: ClipboardItem[]): Promise<void> => {
-//   return navigator.clipboard.write(items)
-// }
-
-// export const readClipboardItems = (): Promise<ClipboardItem[]> => {
-//   return navigator.clipboard.read()
-// }
-
-// export const readClipboardText = (): Promise<string> => {
-//   return navigator.clipboard.readText()
-// }

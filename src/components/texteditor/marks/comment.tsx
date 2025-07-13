@@ -44,12 +44,42 @@ function generateThreadId(): string {
 export const CommentMark = Mark.create<CommentOptions>({
     name: 'comment',
 
-    // Enable inclusive behavior - this allows marks to overlap
-    inclusive: true,
+    // Add this mark to a group of extensions, which can be referred to 
+    // in the content attribute of the schema.
+    // add this mark to the 'basic' group
+    // group: 'basic',
+    // add this mark to the 'basic' and the 'foobar' group
+    // group: 'basic foobar',
+
+
+    // If you don’t want the mark to be active when the cursor is at its end,
+    // set inclusive to false. For example, that’s how it’s configured for Link marks:
+    inclusive: false,
 
     //keepOnSplit: true,
     //group: 'inline',
+
+    // By default all marks can be applied at the same time. With the excludes 
+    // attribute you can define which marks must not coexist with the mark. 
+    // For example, the inline code mark excludes any other mark (bold, italic, and all others).
     excludes: '',
+    // must not coexist with the bold mark
+    //excludes: 'bold',
+    // exclude any other mark
+    // excludes: '_',
+
+    // By default a mark will "trap" the cursor, meaning the cursor can't get 
+    // out of the mark except by moving the cursor left to right into text without
+    //  a mark. If this is set to true, the mark will be exitable when the 
+    // mark is at the end of a node. This is handy for example using code marks.
+    // make this mark exitable - default is false
+    //exitable: true,
+
+    // By default marks can span multiple nodes when rendered as HTML. 
+    // Set spanning: false to indicate that a mark must not span multiple nodes.
+    //spanning: false,
+    //spanning: false,
+
 
     addOptions() {
         return {
