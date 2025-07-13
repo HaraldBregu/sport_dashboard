@@ -305,3 +305,31 @@ span[data-thread-id] span[data-thread-id] .tiptap-thread {
 span[data-thread-id] span[data-thread-id] span[data-thread-id] .tiptap-thread {
   background-color: rgba(173, 216, 230, 0.3); /* Light blue for second nesting level */
 }
+
+/* Apparatus Note Tooltip Styles */
+.apparatus-note-tooltip {
+  padding: 8px;
+  max-width: 300px;
+}
+
+.apparatus-note-tooltip strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.apparatus-note-tooltip p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.tippy-box[data-theme~='light'] {
+  background-color: white;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tippy-box[data-theme~='light'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: white;
+}

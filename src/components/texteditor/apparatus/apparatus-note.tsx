@@ -177,6 +177,9 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
   // Make it atomic (not editable internally)
   // atom: true,
 
+  // Explicitly disable dragging
+  draggable: false,
+
   // Define allowed attributes
   addAttributes() {
     return {
@@ -248,11 +251,12 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
         'data-note-mention-author': HTMLAttributes.author,
         'data-note-mention-noteId': HTMLAttributes.noteId,
         'data-note-mention-highlightColor': HTMLAttributes.highlightColor,
-        class: 'inline-note-mention'
+        class: 'inline-note-mention',
+        style: 'user-select: none;'
       }
     ), ['span', { class: 'note-mention-label' }, `${label}`], ['span', { 
       class: 'note-mention-content',
-      style: `background-color: ${highlightColor};`
+      style: `background-color: ${highlightColor}; padding: 2px 4px; border-radius: 2px;`
     }, `${content}${NOTE_END_MARKER}`]];
   },
 
@@ -300,6 +304,51 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
         editor: this.editor,
         ...NoteMentionSuggestion,
       }),
+      new Plugin({
+        key: new PluginKey('apparatus-note-tooltip'),
+        view: () => {
+          let tooltips: TippyInstance[] = []
+
+          return {
+            update: (view) => {
+              // Clean up existing tooltips
+              tooltips.forEach(t => t.destroy())
+              tooltips = []
+
+              // Find all apparatus notes in the document
+              const notes = view.dom.querySelectorAll('apparatus-note')
+
+              // Create tooltips for each note
+              notes.forEach(note => {
+                const label = note.getAttribute('data-note-mention-label')
+                const description = note.getAttribute('data-note-mention-description')
+                const content = note.getAttribute('data-note-mention-content')
+
+                const tooltip = tippy(note, {
+                  content: `
+                    <div class="apparatus-note-tooltip">
+                      <strong>${label || ''}</strong>
+                      ${description ? `<p>${description}</p>` : ''}
+                      ${content ? `<p>Content: ${content}</p>` : ''}
+                    </div>
+                  `,
+                  allowHTML: true,
+                  placement: 'top',
+                  arrow: true,
+                  theme: 'light',
+                  delay: [200, 0], // Show after 200ms, hide immediately
+                })
+
+                tooltips.push(tooltip)
+              })
+            },
+
+            destroy: () => {
+              tooltips.forEach(t => t.destroy())
+            }
+          }
+        }
+      })
     ]
   },
 })

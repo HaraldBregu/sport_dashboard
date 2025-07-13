@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, useImperativeHandle, memo } from 'react'
+import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import TextEditor, { TextEditorRef } from '@/components/texteditor/text-editor'
 import {
   ContextBubble,
@@ -22,7 +22,6 @@ import {
   Type,
   Bookmark,
   MessageCircle,
-  Sigma,
   Heading4,
   Heading5,
   Heading6,
@@ -377,7 +376,25 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                   }).run()
               }}
             >
-              Add apparatus note
+              Add lemma
+            </Button>
+            <Separator
+              data-slot="context-bubble-separator"
+              data-context-bubble="separator"
+              className={'my-1'}
+            />
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                editorRef.current
+                  ?.editor
+                  ?.chain()
+                  .focus()
+                  .setSigla('[##]', '#FFD700').run()
+              }}
+            >
+              Add sigla
             </Button>
             <Separator
               data-slot="context-bubble-separator"
@@ -600,84 +617,7 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
                 <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
                 <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
               </ContextBubbleSubmenuContent>
-            </ContextBubbleSubmenu>
-            <ContextBubbleSubmenu>
-              <ContextBubbleSubmenuTrigger submenu="comments">
-                <div className="flex items-center">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Add a comment
-                </div>
-                <ChevronRight className="h-4 w-4" />
-              </ContextBubbleSubmenuTrigger>
-              <ContextBubbleSubmenuContent submenu="comments">
-                <ContextBubbleSubmenuItem>Category 1</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 2</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 3</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 4</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>Category 5</ContextBubbleSubmenuItem>
-              </ContextBubbleSubmenuContent>
-            </ContextBubbleSubmenu>
-            <ContextBubbleSubmenu>
-              <ContextBubbleSubmenuTrigger submenu="sigla">
-                <div className="flex items-center">
-                  <Sigma className="mr-2 h-4 w-4" />
-                  Add a siglum
-                </div>
-                <ChevronRight className="h-4 w-4" />
-              </ContextBubbleSubmenuTrigger>
-              <ContextBubbleSubmenuContent submenu="sigla">
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>AL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>BG</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>DE</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>FR</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>IT</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>PL</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RO</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>RU</ContextBubbleSubmenuItem>
-                <ContextBubbleSubmenuItem>SK</ContextBubbleSubmenuItem>
-              </ContextBubbleSubmenuContent>
-            </ContextBubbleSubmenu>
+            </ContextBubbleSubmenu> 
           </ContextBubble>
         </ContextBubbleProvider>
       )}
@@ -685,4 +625,4 @@ const Content = forwardRef<ContentRef, ContentProps>(({ placeholder }, ref) => {
   )
 })
 
-export default memo(Content)
+export default Content

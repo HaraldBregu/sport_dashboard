@@ -25,6 +25,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 // import { CommentMark } from './marks/comment'
 import { ApparatusNoteNode } from './apparatus/apparatus-note'
 import Apparatus from './apparatus/apparatus'
+import SiglaNode from './apparatus/sigla'
 
 export interface TextEditorRef {
   editor: Editor | null
@@ -142,6 +143,7 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
         // NodeView,
         Apparatus,
         ApparatusNoteNode,
+        SiglaNode,
       ],
       editorProps: {
         attributes: {
