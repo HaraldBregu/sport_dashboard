@@ -167,8 +167,8 @@ const NoteMentionSuggestion = {
   },
 }
 
-export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
-  name: 'apparatusNote',
+export const LemmaNode = Node.create<NoteMentionOptions>({
+  name: 'lemma',
 
   // Add to inline group and make it inline
   group: 'inline',
@@ -238,7 +238,7 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
     const label = HTMLAttributes.label || '';
     const content = HTMLAttributes.content || '';
     const highlightColor = HTMLAttributes.highlightColor || DEFAULT_HIGHLIGHT_COLOR;
-    return ['apparatus-note', mergeAttributes(
+    return ['lemma', mergeAttributes(
       this.options.HTMLAttributes,
       HTMLAttributes,
       { 
@@ -305,7 +305,7 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
         ...NoteMentionSuggestion,
       }),
       new Plugin({
-        key: new PluginKey('apparatus-note-tooltip'),
+        key: new PluginKey('lemma-tooltip'),
         view: () => {
           let tooltips: TippyInstance[] = []
 
@@ -315,8 +315,8 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
               tooltips.forEach(t => t.destroy())
               tooltips = []
 
-              // Find all apparatus notes in the document
-              const notes = view.dom.querySelectorAll('apparatus-note')
+              // Find all lemmas in the document
+              const notes = view.dom.querySelectorAll('lemma')
 
               // Create tooltips for each note
               notes.forEach(note => {
@@ -326,7 +326,7 @@ export const ApparatusNoteNode = Node.create<NoteMentionOptions>({
 
                 const tooltip = tippy(note, {
                   content: `
-                    <div class="apparatus-note-tooltip">
+                    <div class="lemma-tooltip">
                       <strong>${label || ''}</strong>
                       ${description ? `<p>${description}</p>` : ''}
                       ${content ? `<p>Content: ${content}</p>` : ''}
@@ -500,4 +500,4 @@ function Suggestion({
   })
 }
 
-export default ApparatusNoteNode
+export default LemmaNode 

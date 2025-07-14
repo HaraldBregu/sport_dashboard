@@ -307,20 +307,20 @@ span[data-thread-id] span[data-thread-id] span[data-thread-id] .tiptap-thread {
 }
 
 /* Apparatus Note Tooltip Styles */
-.apparatus-note-tooltip {
-  padding: 8px;
-  max-width: 300px;
+.lemma-tooltip {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  max-width: 20rem;
 }
 
-.apparatus-note-tooltip strong {
+.lemma-tooltip strong {
   display: block;
-  margin-bottom: 4px;
-  color: #333;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
 }
 
-.apparatus-note-tooltip p {
-  margin: 4px 0;
-  font-size: 14px;
+.lemma-tooltip p {
+  margin: 0;
   color: #666;
 }
 
@@ -332,4 +332,42 @@ span[data-thread-id] span[data-thread-id] span[data-thread-id] .tiptap-thread {
 
 .tippy-box[data-theme~='light'][data-placement^='top'] > .tippy-arrow::before {
   border-top-color: white;
+}
+
+/* Sigla suggestion styles */
+.sigla-suggestions {
+  min-width: 200px;
+  max-width: 300px;
+  font-family: inherit;
+  z-index: 9999 !important;
+  position: relative;
+}
+
+.sigla-item {
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sigla-item:focus {
+  outline: none;
+}
+
+.sigla-trigger {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Ensure tippy dropdown has high z-index */
+.tippy-box[data-theme~='sigla'] {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 9999 !important;
 }
