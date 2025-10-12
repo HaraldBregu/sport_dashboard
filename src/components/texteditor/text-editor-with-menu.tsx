@@ -1,10 +1,13 @@
-import React, { useEffect, forwardRef, useImperativeHandle } from 'react'
-import { useEditor, EditorContent, Editor } from '@tiptap/react'
+import React, { useEffect, forwardRef, useImperativeHandle, useState, useRef } from 'react'
+import { useEditor, EditorContent, Editor, BubbleMenu } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
+import { Extension } from '@tiptap/core'
+import { Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3, Type } from 'lucide-react'
 import { LemmaNode } from './apparatus/lemma'
 import Apparatus from './apparatus/apparatus'
 import SiglaNode from './apparatus/sigla'
+import { AppButton } from '@/components/app/app-button'
 
 export interface TextEditorRef {
   editor: Editor | null
@@ -29,7 +32,7 @@ export interface TextEditorProps {
   style?: React.CSSProperties
 }
 
-export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
+export const TextEditorWithMenu = forwardRef<TextEditorRef, TextEditorProps>(
   (
     {
       content,
@@ -44,82 +47,45 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
     },
     ref
   ) => {
+    const [showBubbleMenu, setShowBubbleMenu] = useState(true)
+    const hideBubbleMenuRef = useRef<(() => void) | null>(null)
+
+    // Create custom extension for handling ESC key
+    const EscapeKeyExtension = Extension.create({
+      name: 'escapeKey',
+      
+      addKeyboardShortcuts() {
+        return {
+          Escape: () => {
+            const { state } = this.editor
+            if (!state.selection.empty) {
+              // Call the hide function from the ref
+              if (hideBubbleMenuRef.current) {
+                hideBubbleMenuRef.current()
+              }
+              return true // Prevent default ESC behavior
+            }
+            return false
+          }
+        }
+      }
+    })
+
+    // Set up the ref callback for hiding bubble menu
+    useEffect(() => {
+      hideBubbleMenuRef.current = () => {
+        setShowBubbleMenu(false)
+      }
+    }, [])
+
     const editor = useEditor({
       shouldRerenderOnTransaction: false,
-      //enableContentCheck: false,
-      // onContentError({ editor, error, disableCollaboration }) {
-      //   // your handler here
-      // },
       extensions: [
-        StarterKit.configure({
-          // heading: false,
-          // paragraph: false,
-          // listItem: false,
-          // bulletList: false,
-          // orderedList: false,
-          // blockquote: false,
-          // codeBlock: false,
-        }),
+        StarterKit.configure({}),
         Placeholder.configure({
           placeholder
         }),
-        // Link.configure({
-        //   openOnClick: false,
-        //   HTMLAttributes: {
-        //     class: 'text-blue-600 underline cursor-pointer'
-        //   }
-        // }),
-        // Image.configure({
-        //   HTMLAttributes: {
-        //     class: 'max-w-full h-auto'
-        //   }
-        // }),
-        // TextAlign.configure({
-        //   types: ['heading', 'paragraph']
-        // }),
-        // Underline,
-        // Highlight.configure({
-        //   multicolor: true
-        // }),
-        // TextStyleExtended,
-        // Color,
-        // FontFamily.configure({
-        //   types: ['textStyle']
-        // }),
-        // CodeBlock.configure({
-        //   HTMLAttributes: {
-        //     class: 'bg-gray-100 p-4 rounded-md font-mono text-sm'
-        //   }
-        // }),
-        // Heading.configure({
-        //   levels: [1, 2, 3, 4, 5, 6]
-        // }),
-        // Paragraph.configure({
-        //   HTMLAttributes: {
-        //     class: 'mb-2'
-        //   }
-        // }),
-        // HorizontalRule,
-        // CommentMark.configure({
-        //   HTMLAttributes: {
-        //     class: 'comment-mark'
-        //   }
-        // }),
-        // CommentMark,
-        // BookmarkMark.configure({
-        //   HTMLAttributes: {
-        //     class: 'bookmark-mark'
-        //   }
-        // }),
-        // DataMark.configure({
-        //   HTMLAttributes: {
-        //     class: 'data-mark'
-        //   }
-        // }),
-        // ApparatusNode,
-        // NoteMark,
-        // Section,
-        // NodeView,
+        EscapeKeyExtension,
         Apparatus,
         LemmaNode,
         SiglaNode,
@@ -137,8 +103,16 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
 
             console.log('contextmenu dom', event)
 
+            // Hide bubble menu on right-click
+            setShowBubbleMenu(false)
+
             onClick?.(event)
             return true
+          },
+          mousedown: () => {
+            // Show bubble menu again on normal clicks
+            setShowBubbleMenu(true)
+            return false
           }
         },
       },
@@ -146,11 +120,9 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
       editable,
       onUpdate: ({ editor }) => {
         const html = editor.getHTML()
-        // const json = editor.getJSON()
         console.log(JSON.stringify(html))
         onChange?.(html)
 
-        // Measure content size when constrained to A4 width (210mm)
         try {
           const container = document.createElement('div')
           container.style.position = 'fixed'
@@ -165,8 +137,8 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
           const rect = container.getBoundingClientRect()
           console.log('A4 content size', { width: rect.width, height: rect.height })
           document.body.removeChild(container)
-        } catch {
-          // no-op
+        } catch (error) {
+          void error
         }
       },
       onSelectionUpdate: ({ editor }) => {
@@ -184,8 +156,8 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
               console.log('selection rect', { width: rect.width, height: rect.height })
             }
           }
-        } catch {
-          // no-op
+        } catch (error) {
+          void error
         }
 
         console.log('selection', selection)
@@ -195,8 +167,6 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
     if (!editor) {
       throw new Error('Editor not initialized')
     }
-
-
 
     useImperativeHandle(
       ref,
@@ -224,7 +194,6 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
       editor.setEditable(editable)
     }, [editable, editor])
 
-    // Initial A4 measurement on mount/content set
     useEffect(() => {
       if (!editor) return
       try {
@@ -242,8 +211,8 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
         const rect = container.getBoundingClientRect()
         console.log('A4 content size (initial)', { width: rect.width, height: rect.height })
         document.body.removeChild(container)
-      } catch {
-        // no-op
+      } catch (error) {
+        void error
       }
     }, [editor])
 
@@ -260,7 +229,6 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
           const from = 0
           const to = Math.min(4000, documentSize)
 
-          // Compute bounding rect for the slice [from, to]
           const startDomPos = view.domAtPos(from)
           const endDomPos = view.domAtPos(to)
           const range = document.createRange()
@@ -269,7 +237,6 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
           const rect = range.getBoundingClientRect()
           console.log(`slice rect [${from}..${to}]`, { width: rect.width, height: rect.height })
 
-          // Compute bounding rect for each node fully/partially within [from, to]
           editor.state.doc.nodesBetween(from, to, (node, pos) => {
             const domNode = view.nodeDOM(pos)
             if (domNode instanceof Element) {
@@ -282,12 +249,11 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
               })
             }
           })
-        } catch {
-          // no-op
+        } catch (error) {
+          void error
         }
       }
 
-      // Initial measure and on updates
       measureSliceAndNodes()
       editor.on('update', measureSliceAndNodes)
       return () => {
@@ -297,12 +263,96 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
 
     return (
       <>
+        <BubbleMenu
+          editor={editor}
+          tippyOptions={{ duration: 100, placement: 'top' }}
+          className="flex items-center gap-0.5 bg-white dark:bg-gray-800 border border-border rounded-lg shadow-lg p-1.5"
+          shouldShow={({ state }) => {
+            // Don't show if explicitly hidden (e.g., on right-click)
+            if (!showBubbleMenu) return false
+            
+            // Show default behavior: only show when there's a selection
+            const { selection } = state
+            const { empty } = selection
+            
+            // Don't show if selection is empty
+            if (empty) return false
+            
+            return true
+          }}
+        >
+          <AppButton
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            variant={editor.isActive('bold') ? 'default' : 'ghost'}
+            size="icon"
+            title="Bold"
+          >
+            <Bold />
+          </AppButton>
+          <AppButton
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            variant={editor.isActive('italic') ? 'default' : 'ghost'}
+            size="icon"
+            title="Italic"
+          >
+            <Italic />
+          </AppButton>
+          <AppButton
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            variant={editor.isActive('strike') ? 'default' : 'ghost'}
+            size="icon"
+            title="Strikethrough"
+          >
+            <Strikethrough />
+          </AppButton>
+          <AppButton
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            variant={editor.isActive('code') ? 'default' : 'ghost'}
+            size="icon"
+            title="Code"
+          >
+            <Code />
+          </AppButton>
+          <div className="w-px h-6 bg-border mx-1" />
+          <AppButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            variant={editor.isActive('heading', { level: 1 }) ? 'default' : 'ghost'}
+            size="icon"
+            title="Heading 1"
+          >
+            <Heading1 />
+          </AppButton>
+          <AppButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            variant={editor.isActive('heading', { level: 2 }) ? 'default' : 'ghost'}
+            size="icon"
+            title="Heading 2"
+          >
+            <Heading2 />
+          </AppButton>
+          <AppButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            variant={editor.isActive('heading', { level: 3 }) ? 'default' : 'ghost'}
+            size="icon"
+            title="Heading 3"
+          >
+            <Heading3 />
+          </AppButton>
+          <AppButton
+            onClick={() => editor.chain().focus().setParagraph().run()}
+            variant={editor.isActive('paragraph') ? 'default' : 'ghost'}
+            size="icon"
+            title="Paragraph"
+          >
+            <Type />
+          </AppButton>
+        </BubbleMenu>
         <EditorContent
           editor={editor}
           className={`prose prose-sm max-w-none focus:outline-none h-full ${className}`}
           style={style}
           onContextMenu={(event) => {
-            onContextMenu?.(event)        
+            onContextMenu?.(event)
           }}
           {...props}
         />
@@ -311,6 +361,6 @@ export const TextEditor = forwardRef<TextEditorRef, TextEditorProps>(
   }
 )
 
-TextEditor.displayName = 'TextEditor'
+TextEditorWithMenu.displayName = 'TextEditorWithMenu'
 
-export default TextEditor
+export default TextEditorWithMenu
